@@ -1,0 +1,567 @@
+/* Bao phủ toàn trang */
+.detail-page-wrapper {
+    max-width: 1100px;
+    margin: 10px auto 80px auto;
+    padding: 0 20px;
+    font-family: Arial, sans-serif; /* Tùy chỉnh font theo dự án của ntt */
+}
+
+.btn-back {
+    background-color: #eafaf1; /* Nền màu xanh lá cực nhạt giống ảnh */
+    color: #00a86b; /* Chữ và icon màu xanh đậm đặc trưng của ntt */
+    border: none;
+    font-size: 14px;
+    font-weight: 600; /* In đậm vừa phải cho đẹp */
+    cursor: pointer;
+    margin-bottom: 10px; /* Đẩy cách phần ảnh bên dưới ra một chút */
+    padding: 7px 18px; /* Kéo dài bề ngang để tạo dáng viên thuốc */
+    border-radius: 40px; /* Bo tròn hoàn toàn 2 đầu */
+    display: inline-flex;
+    align-items: center;
+    gap: 7px; /* Khoảng cách cực mượt giữa mũi tên và chữ */
+    transition: all 0.3s ease;
+}
+
+/* Hiệu ứng khi di chuột vào sẽ đậm lên một xíu cho sinh động */
+.btn-back:hover {
+    background-color: #d4f3e3; 
+}
+/* --- detail1.css --- */
+
+/* 1. Container cha của toàn bộ card */
+.detail-main-card {
+    background: #fff;
+    border-radius: 16px; /* Giữ nguyên độ bo góc */
+    box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    overflow: hidden; /* CỰC KỲ QUAN TRỌNG: Cắt bỏ phần hình ảnh thừa ra khỏi góc bo */
+    width: 100%;
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 0; /* XÓA BỎ padding ban đầu ở đây (ví dụ: padding: 20px;) */
+}
+
+/* 2. Container của hình ảnh */
+.image-gallery {
+    position: relative;
+    width: 100%;
+    height: 500px; /* Có thể giữ nguyên chiều cao */
+    overflow: hidden;
+    margin: 0;
+}
+
+/* Hình ảnh chính bên trong */
+.image-gallery .main-img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center; /* Giữ ảnh ở trung tâm */
+}
+/* --- TRANG TRÍ CHỨC NĂNG LƯỚT ẢNH --- */
+
+/* 1. Badge Đánh giá sao ở góc PHẢI của ảnh (FIX LỖI CŨ) */
+.rating-badge-on-image {
+    position: absolute;
+    top: 20px;
+    right: 20px; /* Nằm bên phải */
+    background: white; /* Nền trắng cho nổi */
+    color: #111827; /* Màu chữ đen */
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    z-index: 2; /* Nổi lên trên ảnh */
+}
+.rating-badge-on-image i {
+    color: #f59e0b; /* Màu vàng cho ngôi sao */
+}
+
+/* 2. Làm mũi tên MỜ và NHỎ hơn (THEO Ý NTT) */
+.nav-arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    /* Sửa kích thước nút nhỏ lại (cũ là 40px) */
+    width: 32px;
+    height: 32px;
+    background: rgba(255, 255, 255, 0.4); /* Nền trắng MỜ hơn (cũ là 0.8) */
+    border: none;
+    border-radius: 50%;
+    cursor: pointer;
+    z-index: 2;
+    /* Giảm độ mờ tổng thể (Dimmer) */
+    opacity: 0.6; 
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Biểu tượng mũi tên bên trong cũng nhỏ lại */
+.nav-arrow i {
+    font-size: 12px; /* cũ là 16px */
+    color: #333;
+}
+
+/* Khi di chuột vào thì rõ lên để người dùng biết là bấm được */
+.nav-arrow:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.8);
+}
+
+.nav-arrow.left { left: 15px; } /* Nhích vào trong một chút */
+.nav-arrow.right { right: 15px; }
+
+.dots-container {
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+}
+.dot {
+    width: 8px;
+    height: 8px;
+    background: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    cursor: pointer;
+}
+.dot.active {
+    background: white;
+    width: 10px;
+    height: 10px;
+}
+
+/* --- KHU VỰC TIÊU ĐỀ --- */
+/* 3. Phần nội dung bên dưới (tiêu đề, stats) */
+.detail-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 15px; /* THÊM khoảng cách thích hợp với ảnh */
+    padding: 0 24px; /* Thêm padding trái phải 24px */
+}
+.title-group h1 {
+    font-size: 32px;
+    margin: 0 0 15px 0;
+    color: #111827;
+}
+.stats {
+    display: flex;
+    gap: 20px;
+    color: #4b5563;
+    font-size: 15px;
+    align-items: center;
+}
+.stats .location { color: #00a86b; font-weight: 500; }
+.stats .fa-star { 
+    color: #f59e0b !important; /* Ép buộc ngôi sao phải có màu cam/vàng */
+}.stats .views i { color: #00a86b; }
+
+.btn-save {
+    background-color: #111827;
+    color: white;
+    border: none;
+    padding: 10px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-save:hover { background-color: #374151; }
+
+.divider {
+    border: none;
+    border-top: 1px solid #e5e7eb;
+    margin: 20px 24px;
+}
+
+/* --- KHU VỰC NỘI DUNG 2 CỘT --- */
+.detail-body {
+    display: flex;
+    gap: 40px;
+    padding: 0 24px 30px 24px; /* Thêm padding trái phải 24px */
+    min-height: 400px;
+}
+.left-column {
+    flex: 6.5; /* Chiếm 65% chiều rộng */
+}
+.section-title {
+    font-size: 20px;
+    color: #111827;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.section-title i { color: #00a86b; }
+.left-column p {
+    color: #4b5563;
+    line-height: 1.7;
+    margin-bottom: 15px;
+    text-align: justify;
+}
+
+.right-column {
+    flex: 3.5; /* Chiếm 35% chiều rộng */
+}
+.mini-map-card {
+    background: #f9fafb;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 10px 0 0 0;
+    text-align: center;
+    overflow: hidden;
+}
+.mini-map-card h4 {
+    margin: 0 0 15px 0;
+    text-align: center;
+    color: #111827;
+}
+/* Tạo khung chứa bản đồ thật */
+#map-detail {
+    width: 100%;
+    height: 300px; /* Ntt có thể chỉnh số này để bản đồ cao/thấp theo ý muốn */
+    border-radius: 0 0 11px 11px;
+    
+    /* 2 dòng này cực kỳ quan trọng */
+    overflow: hidden; /* Cắt phần bản đồ thừa để bo góc được mượt */
+    z-index: 1; /* Hạ z-index xuống để khi cuộn trang, bản đồ không đè lên thanh Header */
+}
+.pin-icon {
+    font-size: 30px;
+    color: #00a86b;
+    background: white;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+.map-caption {
+    margin: 15px 0 0 0;
+    font-size: 13px;
+    color: #6b7280;
+}
+/* Trang trí tiêu đề phụ trong phần nội dung */
+.sub-heading {
+    font-size: 17px;
+    color: #111827;
+    margin: 25px 0 10px 0;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.sub-heading i {
+    color: #00a86b; /* Màu xanh chủ đạo */
+    font-size: 15px;
+}
+
+/* Trang trí danh sách trải nghiệm */
+.feature-list {
+    list-style-type: none; /* Bỏ dấu chấm mặc định */
+    padding-left: 0;
+    margin-bottom: 20px;
+}
+.feature-list li {
+    position: relative;
+    padding-left: 25px;
+    margin-bottom: 12px;
+    color: #4b5563;
+    line-height: 1.6;
+    text-align: justify;
+}
+/* Tạo dấu checkmark xanh thay cho dấu chấm tròn */
+.feature-list li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    top: 0;
+    color: #00a86b;
+    font-weight: bold;
+}
+.feature-list li strong {
+    color: #1f2937;
+}
+/* --- WIDGET BÌNH LUẬN CỘT PHẢI --- */
+.review-widget {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 20px;
+    margin-top: 20px; /* Cách xa bản đồ ở trên 20px */
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.review-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 10px;
+}
+.review-header h4 {
+    margin: 0;
+    color: #111827;
+    font-size: 16px;
+}
+.review-header .review-count {
+    font-size: 12px;
+    color: #00a86b; /* Xanh chủ đạo */
+    font-weight: bold;
+    background: #eafaf1;
+    padding: 3px 8px;
+    border-radius: 20px;
+}
+
+/* Khu vực danh sách có thể cuộn */
+.review-list {
+    max-height: 350px; /* Ép chiều cao tối đa */
+    overflow-y: auto; /* Bật thanh cuộn nếu nội dung quá dài */
+    padding-right: 5px;
+}
+
+/* Làm đẹp thanh cuộn */
+.review-list::-webkit-scrollbar {
+    width: 4px;
+}
+.review-list::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 10px;
+}
+
+.review-item {
+    margin-bottom: 15px;
+    padding-bottom: 15px;
+    border-bottom: 1px dashed #e5e7eb;
+}
+.review-item:last-child {
+    margin-bottom: 0;
+    padding-bottom: 0;
+    border-bottom: none;
+}
+
+.reviewer-info {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+.reviewer-info .avatar {
+    width: 32px;
+    height: 32px;
+    background: #00a86b;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+}
+.name-star .name {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #1f2937;
+}
+.name-star .stars {
+    font-size: 10px;
+    color: #f59e0b;
+}
+
+.review-text {
+    font-size: 13px;
+    color: #4b5563;
+    line-height: 1.5;
+    margin: 0;
+    text-align: justify;
+}
+/* --- NÚT TƯƠNG TÁC BÌNH LUẬN --- */
+.review-actions {
+    display: flex;
+    align-items: center;
+    gap: 15px; /* Khoảng cách giữa các nút */
+    margin-top: 10px;
+    font-size: 12px;
+    color: #6b7280; /* Màu xám nhạt để không tranh giành sự chú ý với nội dung chữ */
+    font-weight: 500;
+}
+
+.action-btn {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    transition: color 0.2s ease;
+}
+
+/* Hiệu ứng khi hover: Đổi sang màu xanh chủ đạo */
+.action-btn:hover {
+    color: #00a86b;
+}
+
+/* Đẩy ngày tháng sang sát lề phải cho cân đối */
+.review-date {
+    margin-left: auto; 
+    font-weight: normal;
+    color: #9ca3af;
+    font-size: 11px;
+}
+
+/* Kiểu dáng cho dòng bộ lọc mới */
+.filter-row {
+    display: flex;
+    justify-content: flex-start; /* Đẩy bộ lọc sang góc phải */
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px; /* Đẩy danh sách bình luận xuống một tí */
+}
+
+.filter-label {
+    font-size: 12px;
+    color: #6b7280;
+}
+
+/* Nút Dropdown có viền mờ nhạt cho dễ nhìn */
+.review-filter {
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    color: #4b5563;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 4px 8px;
+    border-radius: 6px;
+    cursor: pointer;
+    outline: none;
+    font-family: inherit;
+    transition: all 0.2s;
+}
+
+.review-filter:hover {
+    border-color: #00a86b; /* Viền sáng lên màu xanh khi di chuột */
+}
+/* Nút tim khi đã bấm (Liked) */
+.action-btn.liked { color: #ef4444; } /* Chuyển sang màu đỏ */
+.action-btn.liked i { color: #ef4444; }
+
+/* Khu vực hiển thị các phản hồi con */
+.replies-container {
+    margin-top: 15px;
+    padding-left: 15px;
+    border-left: 2px solid #e5e7eb;
+}
+.reply-item {
+    background: #f9fafb;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-bottom: 8px;
+}
+.reply-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 4px;
+}
+.reply-name { font-size: 12px; font-weight: bold; color: #111827; }
+.reply-date { font-size: 11px; color: #9ca3af; }
+.reply-text { font-size: 12px; color: #4b5563; }
+
+/* Ô nhập chữ phản hồi mới */
+.reply-input-box {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+}
+.reply-input {
+    flex: 1;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 20px;
+    font-size: 12px;
+    outline: none;
+    transition: 0.2s;
+}
+.reply-input:focus { border-color: #00a86b; }
+.btn-send {
+    background: #00a86b;
+    color: white;
+    border: none;
+    padding: 0 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.btn-send:hover { background: #008f5a; }
+/* --- KHU VỰC ĐĂNG ĐÁNH GIÁ MỚI --- */
+.new-review-box {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 15px; /* Đẩy danh sách bình luận xuống */
+    padding-bottom: 15px;
+    border-bottom: 1px solid #f3f4f6; /* Tạo vạch ngăn cách rõ ràng với list cũ */
+}
+
+.new-review-box .reviewer-avatar {
+    width: 36px;
+    height: 36px;
+    background: #111827;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: bold;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+
+.new-review-box .input-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: flex-end; /* Căn nút bấm sang góc phải */
+}
+
+.new-review-box textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    resize: none; /* Khóa không cho người dùng kéo to nhỏ làm vỡ layout */
+    outline: none;
+    transition: all 0.2s;
+}
+
+.new-review-box textarea:focus {
+    border-color: #00a86b; /* Đổi màu viền khi click vào */
+    box-shadow: 0 0 0 2px rgba(0, 168, 107, 0.1);
+}
+
+.btn-submit-review {
+    background: #00a86b;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn-submit-review:hover {
+    background: #008f5a;
+}

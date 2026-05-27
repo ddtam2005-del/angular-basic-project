@@ -1,0 +1,546 @@
+/* You can add global /* Thiết lập biến màu để dễ tái sử dụng */
+:root {
+    --primary-green: #00a86b;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+body {
+    background-color: #ffffff;
+    color: #333;
+}
+
+/* Header */
+.header {
+    background-color: #ffffff; 
+    padding: 20px 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    gap: 40px;
+    border-bottom: 1px solid #eaeaea; 
+}
+.logo {
+    position: absolute;
+    left: 180px;
+    font-size: 20px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #222;
+    cursor: pointer;
+}
+.logo-text {
+    font-size: 24px;
+    letter-spacing: -0.5px; /* Ép khoảng cách chữ lại một chút cho giống logo thật */
+}
+
+.text-navy {
+    font-weight: 800;
+    color: #222d3d; /* Màu xanh đen (navy) đậm như trong ảnh */
+}
+
+.text-green {
+    font-weight: 800;
+    color: var(--primary-green);
+}
+
+.logo i {
+    color: var(--primary-green);
+}
+.nav-links a {
+    text-decoration: none;
+    color: #666;
+    margin-right: 20px;
+    font-weight: 500;
+    transition: color 0.1s ease;
+}
+.nav-links a:hover {
+    color: var(--primary-green); 
+}
+.nav-links a.active {
+    color: #222;
+    font-weight: bold;
+}
+
+/* Hero Section */
+.hero {
+    text-align: center;
+    padding: 180px 20px; 
+    /* Chèn ảnh */
+    background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), url('/images/ha-long-bay.jpg') center/cover;
+    color: white;
+}
+.hero h1 {
+    font-size: 36px;
+    margin-bottom: 15px;
+}
+.hero p {
+    color: #f0f0f0;
+    margin-bottom: 30px;
+    line-height: 1.5;
+    max-width: 800px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.hero-image-placeholder {
+    width: 60px; height: 60px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-radius: 8px;
+    display: flex; justify-content: center; align-items: center;
+    margin: 0 auto 30px auto;
+    font-size: 24px;
+    color: rgba(255,255,255,0.6);
+}
+
+/* Search Bar */
+.search-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: #fff;
+    border-radius: 30px;
+    padding: 5px;
+    max-width: 800px; /* Khóa chiều rộng lại để không bị dãn */
+    margin: 0 auto;   /* Căn giữa thanh tìm kiếm */
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+}
+.input-group, .filter-group {
+    display: flex;
+    align-items: center;
+    padding: 10px 20px;
+    gap: 10px;
+    color: #777;
+}
+.input-group {
+    flex: 2;
+    border-right: 1px solid #ddd;
+}
+.input-group input {
+    border: none;
+    outline: none;
+    width: 100%;
+    font-size: 16px;
+    color: #333;
+}
+.filter-group {
+    flex: 1;
+}
+.filter-group select {
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 16px;
+    color: #555;
+    cursor: pointer;
+}
+.btn-search {
+    background-color: var(--primary-green); /* Đổi màu xanh */
+    color: white;
+    border: none;
+    padding: 12px 25px;
+    border-radius: 25px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.btn-search:hover { background-color: #008f5a; }
+
+/* Trending Section */
+.trending {
+    padding: 30px 40px 40px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+.section-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-bottom: 30px;
+}
+.subtitle {
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--primary-green);
+    letter-spacing: 1px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    text-transform: uppercase;
+}
+.section-header h2 { 
+    font-size: 28px; 
+    margin-top: 8px; 
+    color: #1a1a1a;
+}
+.btn-view-all {
+    background: #e8f5f0; 
+    color: var(--primary-green);
+    border: none; 
+    padding: 10px 20px; 
+    border-radius: 20px; 
+    font-weight: 600; 
+    cursor: pointer; 
+    transition: 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.btn-view-all:hover { background: #d1ebe0; }
+
+/* Cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.card {
+    border: 1px solid #eaeaea;
+    border-radius: 16px;
+    overflow: hidden;
+    transition: 0.3s;
+    background-color: #fff;
+}
+.card:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-5px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+}
+.card-image {
+    height: 190px;
+    position: relative;
+    width: 100%;
+}
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+.badge {
+    position: absolute; 
+    top: 15px; 
+    left: 15px;
+    background: var(--primary-green); 
+    color: #fff;
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    letter-spacing: 0.5px;
+}
+.rating {
+    position: absolute; 
+    top: 15px; 
+    right: 15px;
+    background: #fff; 
+    color: #333;
+    padding: 5px 10px; 
+    border-radius: 20px; 
+    font-size: 13px; 
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.rating i { color: #f1c40f; font-size: 12px;}
+
+.card-content { padding: 20px; }
+.card-content h3 { font-size: 19px; margin-bottom: 8px; color: #222; }
+.address { 
+    font-size: 13px; 
+    color: #777; 
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+.desc { 
+    font-size: 14px; 
+    color: #666; 
+    margin-bottom: 15px; 
+    line-height: 1.5; 
+}
+.views { 
+    font-size: 13px; 
+    color: var(--primary-green);
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+/* Cards */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+.card {
+    border: 1px solid #ddd;
+    border-radius: 12px;
+    overflow: hidden;
+    transition: 0.2s;
+}
+.card:hover {
+    border-color: var(--primary-green);
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+.card-image {
+    height: 180px;
+    background-color: #fafafa;
+    border-bottom: 1px solid #ddd;
+    position: relative;
+    display: flex; justify-content: center; align-items: center;
+}
+.badge {
+    position: absolute; 
+    top: 15px; 
+    left: 15px;
+    background-color: var(--primary-green); /* Nền xanh lá */
+    color: #ffffff; /* Chữ màu trắng */
+    padding: 5px 12px; 
+    border-radius: 20px; 
+    font-size: 11px; 
+    font-weight: bold; 
+    letter-spacing: 0.5px;
+    text-transform: uppercase; /* In hoa toàn bộ chữ */
+    box-shadow: 0 4px 8px rgba(0, 168, 107, 0.4); /* Bóng đổ xanh lá nhẹ để tạo chiều sâu */
+    z-index: 2; /* Đảm bảo luôn nổi lên trên ảnh */
+}
+.rating {
+    position: absolute; top: 10px; right: 10px;
+    background: rgba(255,255,255,0.9); padding: 4px 10px; border-radius: 12px; font-size: 12px; font-weight: bold;
+}
+.rating i { color: #f1c40f; } /* Màu vàng cho sao */
+.placeholder-icon { font-size: 40px; color: #ccc; }
+.card-content { padding: 15px; }
+.card-content h3 { font-size: 18px; margin-bottom: 5px; }
+.address { font-size: 14px; color: #777; margin-bottom: 10px; }
+.desc { font-size: 14px; color: #555; margin-bottom: 15px; }
+.views { font-size: 14px; color: #777; }
+
+
+
+
+ /*  TRANG KHÁM PHÁ (DANH SÁCH) */
+.explore-page {
+    background-color: #f8f9fa; /* Màu nền xám cực nhạt để làm nổi bật khối trắng */
+    min-height: 100vh;
+    padding-bottom: 60px;
+}
+.explore-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+.explore-header {
+    margin-bottom: 30px;
+}
+.explore-header h1 {
+    font-size: 32px;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+.explore-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+/* Bố cục 2 cột */
+.explore-layout {
+    display: flex;
+    gap: 30px;
+    align-items: flex-start; /* Sidebar không bị dãn dài theo cột phải */
+}
+
+/* Cột Sidebar */
+.sidebar-filter {
+    width: 280px;
+    flex-shrink: 0;
+    background: #fff;
+    border-radius: 16px;
+    padding: 25px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid #eaeaea;
+    position: sticky;
+    top: 20px;
+    max-height: calc(100vh - 40px);
+    overflow-y: auto;
+}
+.filter-title {
+    font-size: 18px;
+    color: var(--primary-green);
+    margin-bottom: 25px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.filter-section {
+    margin-bottom: 25px;
+}
+.filter-section > label {
+    display: block;
+    font-size: 13px;
+    font-weight: bold;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+/* Ô input tìm kiếm trong sidebar */
+.search-input {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px 12px;
+    gap: 8px;
+    background: #fafafa;
+}
+.search-input i { color: #999; }
+.search-input input {
+    border: none;
+    outline: none;
+    background: transparent;
+    width: 100%;
+    font-size: 14px;
+}
+
+/* Checkbox */
+.checkbox-group {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+.checkbox-group label {
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+/* Đổi màu checkbox mặc định thành màu xanh */
+.checkbox-group input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    accent-color: var(--primary-green); 
+    cursor: pointer;
+}
+
+/* Nút áp dụng */
+.btn-apply {
+    width: 100%;
+    background-color: var(--primary-green);
+    color: white;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+.btn-apply:hover {
+    background-color: #008f5a;
+}
+
+/* Cột Nội dung bên phải */
+.explore-content {
+    flex: 1; /* Chiếm hết phần không gian còn lại */
+}
+.result-bar {
+    background: #f1f3f5;
+    padding: 12px 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    color: #555;
+}
+.result-bar strong { color: #222; }
+
+/* Ghi đè lưới card thành 3 cột (Vì sidebar đã chiếm 1 phần) */
+.card-grid.grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+/* =========================================
+   FOOTER (ntt)
+   ========================================= */
+.footer-ntt {
+    background-color: #0f172a; /* Màu nền xanh navy cực đậm như trong thiết kế */
+    color: #94a3b8; /* Màu chữ xám xanh nhạt */
+    padding-top: 60px;
+    margin-top: 40px; /* Tạo khoảng cách với phần nội dung bên trên */
+}
+
+/* Giới hạn nội dung Footer ở 1200px cho thẳng hàng với trang web */
+.footer-container-ntt {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr; /* Chia 3 cột: Cột 1 to gấp đôi cột 2 và 3 */
+    gap: 40px;
+    margin-bottom: 50px;
+}
+
+/* Định dạng tiêu đề cột */
+.footer-col-ntt h4 {
+    color: #ffffff;
+    font-size: 16px;
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+/* Xóa dấu chấm tròn của danh sách */
+.footer-col-ntt ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-col-ntt ul li {
+    margin-bottom: 15px;
+}
+
+/* Định dạng link trong Footer */
+.footer-col-ntt ul li a {
+    color: #94a3b8;
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s ease;
+}
+
+.footer-col-ntt ul li a:hover {
+    color: var(--primary-green); /* Đổi sang màu xanh lá khi hover */
+}
+
+/* Định dạng cột Logo */
+.footer-brand-ntt p {
+    margin-top: 20px;
+    line-height: 1.6;
+    font-size: 14px;
+    max-width: 320px; /* Giới hạn độ dài đoạn văn để không bị tràn */
+}
+
+/* Cần gỡ bỏ thuộc tính position absolute của logo gốc để logo ở Footer hiển thị bình thường */
+.logo-footer-ntt {
+    position: relative;
+    left: 0;
+}
+
+/* Thanh bản quyền ngang dưới cùng */
+.footer-bottom-ntt {
+    border-top: 1px solid #1e293b; /* Đường kẻ viền mờ */
+    text-align: center;
+    padding: 25px 20px;
+    font-size: 13px;
+    color: #64748b;
+}

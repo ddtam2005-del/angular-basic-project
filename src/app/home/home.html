@@ -1,0 +1,128 @@
+<main>
+        <section class="hero">
+            <h1>Khám phá vẻ đẹp Việt Nam</h1>
+            <p style="text-align: center;" >Tìm kiếm, tra cứu và lên kế hoạch cho những chuyến đi tuyệt vời đến các<br>địa danh nổi tiếng khắp mảnh đất hình chữ S.</p>
+
+            <div class="search-bar">
+                <div class="input-group">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                    <input type="text" placeholder="Bạn muốn đi đâu?">
+                </div>
+
+                <div class="filter-group">
+                    <i class="fa-solid fa-map-location-dot"></i>
+                    <select name="region">
+                        <option value="tat-ca">Tất cả vùng miền</option>
+                        <option value="mien-bac">Miền Bắc</option>
+                        <option value="mien-trung">Miền Trung</option>
+                        <option value="mien-nam">Miền Nam</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <i class="fa-solid fa-filter"></i>
+                    <select name="category">
+                        <option value="tat-ca">Tất cả danh mục</option>
+                        <option value="eco">Sinh thái</option>
+                        <option value="history">Di tích lịch sử</option>
+                        <option value="island">Biển đảo</option>
+                        <option value="entertainment">Khu vui chơi</option>
+                    </select>
+                </div>
+
+                <button class="btn-search" (click)="handleSearch()">Tìm kiếm</button>
+            </div>
+        </section>
+
+        <section class="trending">
+            <div class="section-header">
+                <div>
+                    <span class="subtitle"><i class="fa-solid fa-arrow-trend-up"></i> THỊNH HÀNH</span>
+                    <h2>Top địa điểm nổi bật tuần này</h2>
+                </div>
+                <button class="btn-view-all" (click)="goToExplore()">Xem tất cả <i class="fa-solid fa-arrow-right"></i></button>
+            </div>
+
+            <div class="card-grid">
+               <div class="card">
+                                <div class="card-image">
+                                    <img src="images/phu-quoc.jpg" alt="Phú Quốc">
+                                    <div class="badge">BIỂN ĐẢO</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.5</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Đảo ngọc Phú Quốc</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Kiên Giang</p>
+                                    <p class="desc">Thiên đường nghỉ dưỡng với những bãi biển trong xanh, cát trắng mịn màng và...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 20.100 lượt xem</div>
+                                </div>
+                            </div>
+                <div class="card">
+                                <div class="card-image">
+                                    <img src="images/hue.jpg" alt="Cố đô Huế">
+                                    <div class="badge">DI TÍCH LỊCH SỬ</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Quần thể Cố đô Huế</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Thừa Thiên Huế</p>
+                                    <p class="desc">Khám phá nét đẹp uy nghi, cổ kính của quần thể di tích kiến trúc cung đình triều Nguyễn...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 18.500 lượt xem</div>
+                                </div>
+                            </div>
+                                <div class="card" (click)="goToDetail1()" style="cursor: pointer;">                                <div class="card-image">
+                                    <img src="images/ha-long.jpg" alt="Vịnh Hạ Long">
+                                    <div class="badge">BIỂN ĐẢO</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Vịnh Hạ Long</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Ninh</p>
+                                    <p class="desc">Vịnh Hạ Long là một di sản thiên nhiên thế giới, nổi bật với hàng ng...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 15.420 lượt xem</div>
+                                </div>
+                            </div>
+                <div class="card">
+                                <div class="card-image">
+                                    <img src="images/hoi-an.jpg" alt="Phố cổ Hội An">
+                                    <div class="badge" style="background:#00a86b;">DI TÍCH LỊCH SỬ</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.7</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Phố cổ Hội An</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Nam</p>
+                                    <p class="desc">Hội An là một thành phố cổ kính mang đậm nét kiến trúc truyền...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 12.350 lượt xem</div>
+                                </div>
+                            </div>
+            </div>
+        </section>
+       <section class="interactive-map">
+            <h2>Bản đồ Du lịch Tương tác</h2>
+            <p>Khám phá vị trí các danh lam thắng cảnh trên bản đồ trực quan. Nhấp vào các ghim<br>để xem thông tin chi tiết.</p>
+             <div class="map-container" id="map-mockup">
+    <div class="map-legend">
+        <h4>PHÂN LOẠI</h4>
+        <ul>
+            <li (click)="selectCategory('all')" [class.active]="selectedCategory === 'all'">
+                <span class="dot all"></span> Tất cả
+            </li>
+            <li (click)="selectCategory('eco')" [class.active]="selectedCategory === 'eco'">
+                <span class="dot eco"></span> Sinh thái
+            </li>
+            <li (click)="selectCategory('history')" [class.active]="selectedCategory === 'history'">
+                <span class="dot history"></span> Di tích lịch sử
+            </li>
+            <li (click)="selectCategory('beach')" [class.active]="selectedCategory === 'beach'">
+                <span class="dot beach"></span> Biển đảo
+            </li>
+            <li (click)="selectCategory('park')" [class.active]="selectedCategory === 'park'">
+                <span class="dot park"></span> Khu vui chơi
+            </li>
+        </ul>
+    </div>   
+    
+    <div id="map" style="height: 100%; width: 100%;"></div>
+  </div>
+        </section>
+    </main>

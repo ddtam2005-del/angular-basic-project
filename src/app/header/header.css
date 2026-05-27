@@ -1,0 +1,25 @@
+/* Trang điểm cho chữ menu đang được chọn */
+.menu-dang-chon {
+    font-weight: bold !important; /* In đậm chữ */
+    color: #00a86b !important; /* Đổi màu xanh đồng bộ với logo (bạn có thể đổi màu khác) */
+    border-bottom: 3px solid #00a86b; /* Kẻ một đường gạch chân dày 3px */
+    padding-bottom: 5px; /* Đẩy đường gạch chân xuống dưới chữ một tí cho thoáng */
+}
+header {
+    /* 1. Bố cục dàn hàng ngang (Quan trọng nhất: Giữ lại Flex, XÓA Block) */
+    display: flex;
+    align-items: center;
+    justify-content: center; /* Đẩy Logo sang trái, Menu sang phải. Nếu cũ ntt dùng 'center' thì đổi lại nhé */
+    gap: 40px;
+    padding: 20px 40px;
+
+    /* 2. Hiệu ứng ghim trên đỉnh (Đã thành công) */
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+
+    /* 3. Trang trí nền và bóng đổ */
+    background-color: #ffffff;
+    border-bottom: 1px solid #eaeaea; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+}

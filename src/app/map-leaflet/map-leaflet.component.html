@@ -1,0 +1,39 @@
+<div class="map-wrapper">
+  <div class="map-controls">
+    
+    <div class="search-box">
+      <input 
+        type="text" 
+        [(ngModel)]="searchQuery" 
+        (keydown.enter)="onSearchSubmit()" 
+        placeholder="Tìm kiếm địa điểm..." 
+    />
+      <div type="button" class="search-btn" (click)="onSearchSubmit()">
+       <img class="search-icon" src="images/tim-kiem.png" alt="Tìm kiếm">
+      </div>
+    </div>
+
+    <div class="category-tabs">
+      <button class="tab-item" [class.active]="selectedCategory === 'All'" (click)="filterByCategory('All')">
+        Tất cả
+      </button>
+      <button class="tab-item" [class.active]="selectedCategory === 'Sinh thái'" (click)="filterByCategory('Sinh thái')">
+        <span class="dot green"></span> Sinh thái
+      </button>
+      <button class="tab-item" [class.active]="selectedCategory === 'Di tích lịch sử'" (click)="filterByCategory('Di tích lịch sử')">
+        <span class="dot yellow"></span> Di tích lịch sử
+      </button>
+      <button class="tab-item" [class.active]="selectedCategory === 'Biển đảo'" (click)="filterByCategory('Biển đảo')">
+        <span class="dot blue"></span> Biển đảo
+      </button>
+      <button class="tab-item" [class.active]="selectedCategory === 'Khu vui chơi'" (click)="filterByCategory('Khu vui chơi')">
+        <span class="dot red"></span> Khu vui chơi
+      </button>
+    </div>
+
+  </div>
+
+  <section class="map-leaflet">
+    <div id="map"></div>
+  </section>
+</div>

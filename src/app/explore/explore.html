@@ -1,0 +1,148 @@
+<main>
+        <!-- Phần trang Khám phá -->
+        <section class="explore-page">
+            <div class="explore-container">
+                <!-- Tiêu đề trang -->
+                <div class="explore-header">
+                    <h1>Khám phá Việt Nam</h1>
+                    <p>Tìm kiếm điểm đến lý tưởng cho chuyến đi tiếp theo của bạn.</p>
+                </div>
+
+                <!-- Bố cục 2 cột -->
+                <div class="explore-layout">
+                    
+                    <!-- Cột trái: Bộ lọc (Sidebar) -->
+                    <aside class="sidebar-filter">
+                        <h3 class="filter-title"><i class="fa-solid fa-filter"></i> Bộ lọc tìm kiếm</h3>
+                        
+                        <div class="filter-section">
+                            <label>Tên địa điểm / Tỉnh thành</label>
+                            <div class="search-input">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                                <input type="text" placeholder="Nhập từ khóa...">
+                            </div>
+                        </div>
+                        
+                        <div class="filter-section">
+                            <label>Vùng miền</label>
+                            <div class="checkbox-group"> 
+                                <label><input type="radio" name="region" value="tat-ca" checked> Tất cả</label>
+                                <label><input type="radio" name="region" value="mien-bac"> Miền Bắc</label>
+                                <label><input type="radio" name="region" value="mien-trung"> Miền Trung</label>
+                                <label><input type="radio" name="region" value="mien-nam"> Miền Nam</label>
+                            </div>
+                        </div>
+
+                        <div class="filter-section">
+                            <label>Danh mục</label>
+                            <div class="checkbox-group">
+                                <label><input type="checkbox" checked> Tất cả</label>
+                                <label><input type="checkbox"> Sinh thái</label>
+                                <label><input type="checkbox"> Di tích lịch sử</label>
+                                <label><input type="checkbox"> Biển đảo</label>
+                                <label><input type="checkbox"> Khu vui chơi</label>
+                            </div>
+                        </div>
+
+                        <button class="btn-apply">Áp dụng bộ lọc</button>
+                    </aside>
+
+                    <!-- Cột phải: Kết quả -->
+                    <div class="explore-content">
+                        <div class="result-bar">
+                            Tìm thấy <strong>5</strong> kết quả phù hợp
+                        </div>
+                        
+                        <!-- Lưới danh sách (Tái sử dụng class card cũ, thêm class grid-3) -->
+                        <div class="card-grid grid-3">
+                            <!-- Card 1 -->
+                            <div class="card" (click)="goToDetail1()" style="cursor: pointer;">
+                                <div class="card-image">
+                                    <img src="images/ha-long.jpg" alt="Vịnh Hạ Long">
+                                    <div class="badge">BIỂN ĐẢO</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Vịnh Hạ Long</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Ninh</p>
+                                    <p class="desc">Vịnh Hạ Long là một di sản thiên nhiên thế giới, nổi bật với hàng ng...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 15.420 lượt xem</div>
+                                </div>
+                            </div>
+                            <!-- Card 2 -->
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="images/hoi-an.jpg" alt="Phố cổ Hội An">
+                                    <div class="badge" style="background:#00a86b;">DI TÍCH LỊCH SỬ</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.7</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Phố cổ Hội An</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Nam</p>
+                                    <p class="desc">Hội An là một thành phố cổ kính mang đậm nét kiến trúc truyền...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 12.350 lượt xem</div>
+                                </div>
+                            </div>
+
+                            <!-- Card 3 -->
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="images/cau-ban-tay.jpg" alt="Cầu Vàng">
+                                    <div class="badge">KHU VUI CHƠI</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.6</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Cầu Vàng</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Đà Nẵng</p>
+                                    <p class="desc">Cây cầu có thiết kế độc đáo với đôi bàn tay khổng lồ bằng đá nâng đỡ,...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 9.840 lượt xem</div>
+                                </div>
+                            </div>
+                            <!-- Card 4 -->
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="images/ruong-bac-thang.jpg" alt="Ruộng Bậc Thang Sapa">
+                                    <div class="badge">SINH THÁI</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.9</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Ruộng bậc thang Sapa</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Lào Cai</p>
+                                    <p class="desc">Sapa nổi bật với cảnh quan ruộng bậc thang tuyệt đẹp trải dài trên các sườn đồi...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 11.020 lượt xem</div>
+                                </div>
+                            </div>
+                            <!-- Card 5 -->
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="images/phu-quoc.jpg" alt="Phú Quốc">
+                                    <div class="badge">BIỂN ĐẢO</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.5</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Đảo ngọc Phú Quốc</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Kiên Giang</p>
+                                    <p class="desc">Thiên đường nghỉ dưỡng với những bãi biển trong xanh, cát trắng mịn màng và...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 20.100 lượt xem</div>
+                                </div>
+                            </div>
+                            <!-- Card 6 -->
+                            <div class="card">
+                                <div class="card-image">
+                                    <img src="images/hue.jpg" alt="Cố đô Huế">
+                                    <div class="badge">DI TÍCH LỊCH SỬ</div>
+                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                </div>
+                                <div class="card-content">
+                                    <h3>Quần thể Cố đô Huế</h3>
+                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Thừa Thiên Huế</p>
+                                    <p class="desc">Khám phá nét đẹp uy nghi, cổ kính của quần thể di tích kiến trúc cung đình triều Nguyễn...</p>
+                                    <div class="views"><i class="fa-regular fa-eye"></i> 18.500 lượt xem</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>

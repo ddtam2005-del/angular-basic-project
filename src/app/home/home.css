@@ -1,0 +1,123 @@
+.interactive-map {
+    text-align: center;
+    padding: 40px;
+    max-width: 1000px;
+    margin: 0 auto 60px auto;
+}
+.interactive-map h2 { font-size: 28px; margin-bottom: 10px; }
+.interactive-map p { color: #555; margin-bottom: 30px; }
+
+.map-container {
+    border: 1px solid #ccc; 
+    border-radius: 16px; 
+    height: 500px; 
+    position: relative; 
+    background-color: #fafafa; 
+    overflow: hidden;
+}
+
+.map-legend {
+    position: absolute; 
+    top: 220px;          /* Đã lùi xuống dưới theo ý bạn */
+    left: 12px;         
+    background: #fff; 
+    padding: 15px; 
+    border-radius: 12px; 
+    text-align: left; 
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+    z-index: 1010;      
+    pointer-events: auto; 
+}
+.map-legend h4 { 
+    font-size: 14px; 
+    margin-top: 0;      
+    margin-bottom: 10px; 
+}
+.map-legend ul { 
+    list-style: none; 
+    padding: 0; 
+    margin: 0; 
+}
+.map-legend li { 
+    font-size: 14px; 
+    margin-bottom: 8px; 
+    display: flex; 
+    align-items: center; 
+    gap: 8px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+}
+.map-legend li:last-child { margin-bottom: 0; }
+.map-legend ul li:hover { opacity: 0.8; }
+.map-legend ul li.active { font-weight: bold; }
+
+/* Điểm chấm màu */
+.dot { 
+    width: 10px; 
+    height: 10px; 
+    border-radius: 50%; 
+    display: inline-block; 
+    flex-shrink: 0;     
+}
+.dot.all { background-color: #555555; }
+.eco { background-color: #32CD32; }
+.history { background-color: #FFD700; }
+.beach { background-color: #1E90FF; }
+.park { background-color: #FF4500; }
+
+
+/* ==========================================================================
+   SỬA LẠI: XÓA SẠCH KHUNG NGOÀI & MŨI TÊN CỦA LEAFLET (BỎ :HOST)
+   ========================================================================== */
+::ng-deep .leaflet-tooltip {
+    background: transparent !important; /* Xóa nền trắng bọc ngoài */
+    border: none !important;             /* Xóa viền mặc định */
+    box-shadow: none !important;         /* Xóa đổ bóng mặc định cũ */
+    padding: 0 !important;               /* Đưa padding về 0 để khung trong chiếm 100% */
+}
+
+/* Ẩn hoàn toàn mũi tên ghim nhọn chĩa vào Marker ở mọi hướng */
+::ng-deep .leaflet-tooltip::before {
+    display: none !important;
+}
+
+/* ==========================================================================
+   THẺ CARD BÊN TRONG TOOLTIP MAP (GIỮ NGUYÊN & ĐẸP HƠN)
+   ========================================================================== */
+:host ::ng-deep .my-tooltip-card {
+    background: white;
+    border-radius: 12px;                  /* Tăng lên 12px nhìn cho hiện đại, bo cong mềm mại */
+    overflow: hidden;                     /* Ép ảnh trên đầu phải bo tròn góc theo card */
+    box-shadow: 0 6px 20px rgba(0,0,0,0.15); /* Đổ bóng mịn màng tạo độ nổi */
+    width: 240px;                         /* Tăng nhẹ lên 240px để bố cục ảnh/chữ không bị chật */
+    display: flex;
+    flex-direction: column;
+}
+
+:host ::ng-deep .my-tooltip-img {
+    width: 100%;
+    height: 130px;                        /* Cân đối lại chiều cao ảnh */
+    object-fit: cover;                    /* Chống bóp méo hình ảnh */
+    display: block;
+    margin: 0;
+}
+
+:host ::ng-deep .my-tooltip-text {
+    padding: 12px 14px;
+    text-align: left;
+    white-space: normal;                  /* Cho phép tự động xuống dòng khi chữ dài */
+}
+
+:host ::ng-deep .my-tooltip-text b {
+    font-size: 16px;
+    color: #222;
+    display: block;
+    margin-bottom: 6px;
+}
+
+:host ::ng-deep .my-tooltip-text span {
+    font-size: 13px;
+    color: #555;
+    line-height: 1.4;
+    display: block;
+}
