@@ -6,12 +6,12 @@
             <div class="search-bar">
                 <div class="input-group">
                     <i class="fa-solid fa-magnifying-glass"></i>
-                    <input type="text" placeholder="Bạn muốn đi đâu?">
+                    <input type="text" placeholder="Bạn muốn đi đâu?" [(ngModel)]="searchKeyword" (keyup.enter)="handleSearch()">
                 </div>
 
                 <div class="filter-group">
                     <i class="fa-solid fa-map-location-dot"></i>
-                    <select name="region">
+                    <select name="region" [(ngModel)]="searchRegion">
                         <option value="tat-ca">Tất cả vùng miền</option>
                         <option value="mien-bac">Miền Bắc</option>
                         <option value="mien-trung">Miền Trung</option>
@@ -21,12 +21,12 @@
 
                 <div class="filter-group">
                     <i class="fa-solid fa-filter"></i>
-                    <select name="category">
+                    <select name="category" [(ngModel)]="searchCategory">
                         <option value="tat-ca">Tất cả danh mục</option>
-                        <option value="eco">Sinh thái</option>
-                        <option value="history">Di tích lịch sử</option>
-                        <option value="island">Biển đảo</option>
-                        <option value="entertainment">Khu vui chơi</option>
+                        
+                        @for (cat of categories(); track cat.category_id) {
+                            <option [value]="cat.name">{{ cat.name }}</option>
+                        }
                     </select>
                 </div>
 
@@ -44,58 +44,26 @@
             </div>
 
             <div class="card-grid">
-               <div class="card">
-                                <div class="card-image">
-                                    <img src="images/phu-quoc.jpg" alt="Phú Quốc">
-                                    <div class="badge">BIỂN ĐẢO</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.5</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Đảo ngọc Phú Quốc</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Kiên Giang</p>
-                                    <p class="desc">Thiên đường nghỉ dưỡng với những bãi biển trong xanh, cát trắng mịn màng và...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 20.100 lượt xem</div>
-                                </div>
-                            </div>
-                <div class="card">
-                                <div class="card-image">
-                                    <img src="images/hue.jpg" alt="Cố đô Huế">
-                                    <div class="badge">DI TÍCH LỊCH SỬ</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Quần thể Cố đô Huế</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Thừa Thiên Huế</p>
-                                    <p class="desc">Khám phá nét đẹp uy nghi, cổ kính của quần thể di tích kiến trúc cung đình triều Nguyễn...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 18.500 lượt xem</div>
-                                </div>
-                            </div>
-                                <div class="card" (click)="goToDetail1()" style="cursor: pointer;">                                <div class="card-image">
-                                    <img src="images/ha-long.jpg" alt="Vịnh Hạ Long">
-                                    <div class="badge">BIỂN ĐẢO</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Vịnh Hạ Long</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Ninh</p>
-                                    <p class="desc">Vịnh Hạ Long là một di sản thiên nhiên thế giới, nổi bật với hàng ng...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 15.420 lượt xem</div>
-                                </div>
-                            </div>
-                <div class="card">
-                                <div class="card-image">
-                                    <img src="images/hoi-an.jpg" alt="Phố cổ Hội An">
-                                    <div class="badge" style="background:#00a86b;">DI TÍCH LỊCH SỬ</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.7</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Phố cổ Hội An</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Nam</p>
-                                    <p class="desc">Hội An là một thành phố cổ kính mang đậm nét kiến trúc truyền...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 12.350 lượt xem</div>
-                                </div>
-                            </div>
+    @for (place of trendingLocations(); track place.id) {
+        <div class="card" style="cursor: pointer;" (click)="goToDetail(place.id)">
+            <div class="card-image">
+                <img src="images/ha-long.jpg" [alt]="place.name">
+                <div class="badge" [style.background]="getBadgeColor(place.category)">{{ place.category | uppercase }}</div>
+                <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
             </div>
+            <div class="card-content">
+                <h3>{{ place.name }}</h3>
+                <p class="address"><i class="fa-solid fa-location-dot"></i> {{ place.province }}</p>
+                <p class="desc">{{ place.description ? place.description.substring(0, 80) : 'Chưa có mô tả' }}...</p>
+                <div class="views"><i class="fa-regular fa-eye"></i> {{ place.views || 0 }} lượt xem</div>
+            </div>
+        </div>
+    }
+    
+    @if (trendingLocations().length === 0) {
+        <p style="text-align: center; color: #777; grid-column: span 4;">Đang tải danh sách địa điểm nổi bật...</p>
+    }
+</div>
         </section>
        <section class="interactive-map">
             <h2>Bản đồ Du lịch Tương tác</h2>
@@ -104,23 +72,17 @@
     <div class="map-legend">
         <h4>PHÂN LOẠI</h4>
         <ul>
-            <li (click)="selectCategory('all')" [class.active]="selectedCategory === 'all'">
-                <span class="dot all"></span> Tất cả
+            <li (click)="selectCategory('Tất cả')" [class.active]="selectedCategory === 'Tất cả'">
+                <span class="dot" style="background-color: #555555;"></span> Tất cả
             </li>
-            <li (click)="selectCategory('eco')" [class.active]="selectedCategory === 'eco'">
-                <span class="dot eco"></span> Sinh thái
-            </li>
-            <li (click)="selectCategory('history')" [class.active]="selectedCategory === 'history'">
-                <span class="dot history"></span> Di tích lịch sử
-            </li>
-            <li (click)="selectCategory('beach')" [class.active]="selectedCategory === 'beach'">
-                <span class="dot beach"></span> Biển đảo
-            </li>
-            <li (click)="selectCategory('park')" [class.active]="selectedCategory === 'park'">
-                <span class="dot park"></span> Khu vui chơi
-            </li>
+            
+            @for (cat of categories().slice(0, 4); track cat.category_id) {
+                <li (click)="selectCategory(cat.name)" [class.active]="selectedCategory === cat.name">
+                    <span class="dot" [style.background-color]="getBadgeColor(cat.name)"></span> {{ cat.name }}
+                </li>
+            }
         </ul>
-    </div>   
+    </div>
     
     <div id="map" style="height: 100%; width: 100%;"></div>
   </div>

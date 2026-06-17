@@ -6,132 +6,127 @@
     <div class="detail-main-card">
         
         <div class="image-gallery">
-            <img [src]="images[currentIndex]" alt="Vịnh Hạ Long" class="main-img">
+            <img [src]="images[currentIndex]" [alt]="locationData?.name" class="main-img" onerror="this.src='images/ha-long.jpg'">
             
-            <div class="badge">BIỂN ĐẢO</div>
+            <div class="badge">{{ (locationData?.category_name || 'Khám phá') | uppercase }}</div>
             
             <button class="nav-arrow left" (click)="prevImage()"><i class="fa-solid fa-chevron-left"></i></button>
             <button class="nav-arrow right" (click)="nextImage()"><i class="fa-solid fa-chevron-right"></i></button>
             
             <div class="dots-container">
-                <span class="dot" [class.active]="currentIndex === 0" (click)="setIndex(0)"></span>
-                <span class="dot" [class.active]="currentIndex === 1" (click)="setIndex(1)"></span>
-                <span class="dot" [class.active]="currentIndex === 2" (click)="setIndex(2)"></span>
+                <span class="dot" *ngFor="let img of images; let i = index" [class.active]="currentIndex === i" (click)="setIndex(i)"></span>
             </div>
         </div>
 
         <div class="detail-header">
             <div class="title-group">
-                <h1>Vịnh Hạ Long</h1>
+                <h1>{{ locationData?.name || 'Đang tải dữ liệu...' }}</h1>
                 <div class="stats">
-                    <span class="location"><i class="fa-solid fa-location-dot"></i> Quảng Ninh</span>
+                    <span class="location"><i class="fa-solid fa-location-dot"></i> {{ locationData?.province_name || 'Đang cập nhật' }}</span>
                     <span class="detail-rating"><i class="fa-solid fa-star"></i> 4.8 / 5</span>
-                    <span class="views"><i class="fa-regular fa-eye"></i> 15.420 lượt xem</span>
+                    <span class="views"><i class="fa-regular fa-eye"></i> {{ locationData?.view_count || 0 }} lượt xem</span>
                 </div>
             </div>
-            <div class="action-group">
-                <button class="btn-save">Lưu vào danh sách</button>
             </div>
-        </div>
 
         <hr class="divider">
 
         <div class="detail-body">
             <div class="left-column">
-    <h2 class="section-title"><i class="fas fa-info-circle"></i> Tổng quan</h2>
-    
-    <p><strong>Vịnh Hạ Long</strong> - viên ngọc xanh tuyệt mỹ của Vịnh Bắc Bộ, đã hai lần được UNESCO vinh danh là Di sản Thiên nhiên Thế giới. Nơi đây được ví như một bức tranh thủy mặc khổng lồ, nổi bật với hơn 1.900 hòn đảo đá vôi kỳ vĩ vươn mình lên mặt nước xanh ngọc bích phẳng lặng, tạo nên một tuyệt tác thiên nhiên độc nhất vô nhị.</p>
+                <h2 class="section-title"><i class="fas fa-info-circle"></i> Tổng quan</h2>
+                <p style="white-space: pre-wrap; font-size: 15px; line-height: 1.7;">{{ locationData?.description || 'Chưa có thông tin mô tả chi tiết cho địa điểm này.' }}</p>
 
-    <h3 class="sub-heading"><i class="fas fa-gem"></i> Trải nghiệm không thể bỏ lỡ</h3>
-    <ul class="feature-list">
-        <li><strong>Ngủ đêm trên du thuyền:</strong> Đón bình minh rực rỡ và tận hưởng bữa tối lãng mạn giữa muôn trùng sóng nước.</li>
-        <li><strong>Khám phá hang động:</strong> Choáng ngợp trước hệ thống nhũ đá hàng triệu năm tuổi tại Hang Sửng Sốt, Động Thiên Cung hay Hang Đầu Gỗ.</li>
-        <li><strong>Hoạt động ngoài trời:</strong> Tự tay chèo thuyền Kayak luồn lách qua các hang luồn sát mặt nước, hoặc leo lên đỉnh đảo Ti Tốp ngắm toàn cảnh Vịnh.</li>
-    </ul>
-
-    <h3 class="sub-heading"><i class="fas fa-calendar-alt"></i> Thời điểm lý tưởng</h3>
-    <p>Để tận hưởng trọn vẹn vẻ đẹp của Hạ Long, bạn nên ghé thăm vào khoảng thời gian từ <strong>tháng 4 đến tháng 6</strong> (thời tiết nắng ấm, biển êm, rất hợp để tắm biển) hoặc từ <strong>tháng 9 đến tháng 11</strong> (trời thu mát mẻ, trong xanh, lý tưởng để chụp ảnh và nghỉ dưỡng).</p>
-    <h3 class="sub-heading"><i class="fas fa-map-signs"></i> Lịch trình gợi ý (2 Ngày 1 Đêm)</h3>
-    <p>
-        <strong>Ngày 1:</strong> Đón khách tại Cảng Tuần Châu, nhận phòng du thuyền. Buổi chiều tham quan Hang Sửng Sốt, chèo Kayak tại Hang Luồn. Tối thưởng thức hải sản và câu mực đêm.<br>
-        <strong>Ngày 2:</strong> Đón bình minh với bài tập Thái Cực Quyền trên boong tàu. Khám phá Đảo Ti Tốp, tắm biển hoặc leo núi ngắm toàn cảnh trước khi trả phòng về đất liền.
-    </p>
-
-    <h3 class="sub-heading"><i class="fas fa-utensils"></i> Đặc sản không thể bỏ lỡ</h3>
-    <ul class="feature-list">
-        <li><strong>Chả mực giã tay:</strong> Món ăn trứ danh, giòn sần sật, thơm nức mũi, ăn kèm xôi trắng hoặc bánh cuốn.</li>
-        <li><strong>Sá sùng:</strong> Đặc sản đắt đỏ và quý hiếm, mang vị ngọt thanh đặc trưng của vùng biển Quảng Ninh.</li>
-        <li><strong>Hàu sữa nướng mỡ hành:</strong> Những con hàu béo ngậy được đánh bắt ngay tại Vịnh, nướng trên than hồng thơm lừng.</li>
-    </ul>
-</div>
+                <h3 class="sub-heading"><i class="fas fa-map-signs"></i> Thông tin thêm</h3>
+                <p style="color: #4b5563; line-height: 1.7;">Nơi đây luôn chào đón du khách mọi thời điểm trong năm. Đừng quên chuẩn bị hành trang đầy đủ và chia sẻ những khoảnh khắc tuyệt vời của bạn tại phần bình luận nhé!</p>
+            </div>
 
             <div class="right-column">
                 <div class="mini-map-card">
                     <h4>Vị trí trên bản đồ</h4>
                     <div id="map-detail"></div>
                 </div>
+                
                 <div class="review-widget">
-   <div class="review-header">
-    <h4>Khách hàng nói gì?</h4>
-    <span class="review-count">{{ reviews.length }} đánh giá</span>
-</div>
-<div class="new-review-box">
-    <div class="reviewer-avatar">N</div>
-    <div class="input-wrapper">
-        <textarea #newReviewInput placeholder="Chia sẻ trải nghiệm của bạn về Vịnh Hạ Long..." rows="2"></textarea>
-        
-        <button class="btn-submit-review" (click)="submitNewReview(newReviewInput.value); newReviewInput.value=''">Đăng đánh giá</button>
-    </div>
-</div>
-<div class="filter-row">
-    <span class="filter-label">Sắp xếp:</span>
-    <select class="review-filter" (change)="onFilterChange($event)">
-        <option value="recent">Mới nhất</option>
-        <option value="helpful">Hữu ích nhất</option>
-        <option value="oldest">Cũ nhất</option>
-    </select>
-</div>
-<div class="review-list">
-    </div>
-    
-    <div class="review-list">
-    <div class="review-item" *ngFor="let review of reviews">
-        <div class="reviewer-info">
-            <div class="avatar" [style.background]="review.bgColor">{{ review.avatar }}</div>
-            <div class="name-star">
-                <span class="name">{{ review.name }}</span>
-                <span class="stars">
-                    <i class="fas fa-star" *ngFor="let s of [].constructor(review.rating)"></i>
-                </span>
-            </div>
-        </div>
-           <p class="review-text">{{ review.text }}</p>
-
-        <div class="review-actions">
-            <span class="action-btn" 
-                  [class.liked]="review.isLiked" 
-                  (click)="toggleLike(review)">
-                <i [class]="review.isLiked ? 'fas fa-heart' : 'far fa-heart'"></i> 
-                Hữu ích ({{ review.helpfulCount }})
-            </span>
-            
-            <span class="action-btn reply-btn" (click)="toggleReplyInput(review)">Phản hồi</span>
-            <span class="review-date">{{ review.dateStr }}</span>
-        </div>
-
-        <div class="replies-container" *ngIf="review.replies.length > 0">
-            <div class="reply-item" *ngFor="let reply of review.replies">
-                <div class="reply-header">
-                    <span class="reply-name">{{ reply.name }}</span>
-                    <span class="reply-date">{{ reply.dateStr }}</span>
+                   <div class="review-header">
+                    <h4>Khách hàng nói gì?</h4>
+                    <span class="review-count">{{ reviews.length }} đánh giá</span>
                 </div>
-                <div class="reply-text">{{ reply.text }}</div>
-            </div>
-        </div>
+                
+                <div class="new-review-box">
+                    <div class="reviewer-avatar">N</div>
+                    <div class="input-wrapper">
+                        
+                        <input type="text" #newNameInput placeholder="Nhập tên của bạn..." class="name-input">
+                        
+                        <textarea #newReviewInput placeholder="Chia sẻ trải nghiệm của bạn về địa điểm này..." rows="2"></textarea>
+                        <div class="star-rating-input">
+                            <div class="stars">
+                                <i *ngFor="let star of [1, 2, 3, 4, 5]" 
+                                   class="fa-star"
+                                   [class.fa-solid]="star <= newReviewRating"
+                                   [class.fa-regular]="star > newReviewRating"
+                                   [class.active]="star <= newReviewRating"
+                                   (click)="setNewRating(star)">
+                                </i>
+                            </div>
+                        </div>
+                        
+                        <button class="btn-submit-review" 
+                            (click)="submitNewReview(newNameInput.value, newReviewInput.value); newReviewInput.value=''; newNameInput.value=''">
+                            Đăng đánh giá
+                        </button>
+                    </div>
+                </div>>
 
-        <div class="reply-input-box" *ngIf="review.showReplyInput">
-            <input type="text" #replyInput placeholder="Viết phản hồi..." class="reply-input">
-            <button class="btn-send" (click)="submitReply(review, replyInput.value); replyInput.value=''">Gửi</button>
-        </div>
-    </div>
-</div>
+                <div class="filter-row">
+                    <span class="filter-label">Sắp xếp:</span>
+                    <select class="review-filter" (change)="onFilterChange($event)">
+                        <option value="recent">Mới nhất</option>
+                        <option value="helpful">Hữu ích nhất</option>
+                        <option value="oldest">Cũ nhất</option>
+                    </select>
+                </div>
+                
+                <div class="review-list">
+                    <div class="review-item" *ngFor="let review of reviews">
+                        <div class="reviewer-info">
+                            <div class="avatar" [style.background]="review.bgColor">{{ review.avatar }}</div>
+                            <div class="name-star">
+                                <span class="name">{{ review.name }}</span>
+                                <span class="stars">
+                                    <i class="fas fa-star" *ngFor="let s of [].constructor(review.rating)"></i>
+                                </span>
+                            </div>
+                        </div>
+                           <p class="review-text">{{ review.text }}</p>
+
+                        <div class="review-actions">
+                            <span class="action-btn" 
+                                  [class.liked]="review.isLiked" 
+                                  (click)="toggleLike(review)">
+                                <i [class]="review.isLiked ? 'fas fa-heart' : 'far fa-heart'"></i> 
+                                Hữu ích ({{ review.helpfulCount }})
+                            </span>
+                            
+                            <span class="action-btn reply-btn" (click)="toggleReplyInput(review)">Phản hồi</span>
+                            <span class="review-date">{{ review.dateStr }}</span>
+                        </div>
+
+                        <div class="replies-container" *ngIf="review.replies.length > 0">
+                            <div class="reply-item" *ngFor="let reply of review.replies">
+                                <div class="reply-header">
+                                    <span class="reply-name">{{ reply.name }}</span>
+                                    <span class="reply-date">{{ reply.dateStr }}</span>
+                                </div>
+                                <div class="reply-text">{{ reply.text }}</div>
+                            </div>
+                        </div>
+
+                        <div class="reply-input-box" *ngIf="review.showReplyInput">
+                            <input type="text" #replyInput placeholder="Viết phản hồi..." class="reply-input">
+                            <button class="btn-send" (click)="submitReply(review, replyInput.value); replyInput.value=''">Gửi</button>
+                        </div>
+                    </div>
+                </div>
+                </div> </div> </div> </div> </div> ```
+

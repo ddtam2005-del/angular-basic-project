@@ -1,6 +1,6 @@
-import { Component, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
+import { Component, OnInit, PLATFORM_ID, Inject, NgZone, ChangeDetectorRef } from '@angular/core';
 import { isPlatformBrowser, CommonModule } from '@angular/common';
-import { Router } from '@angular/router'; // 1. Bổ sung công cụ Router
+import { Router, ActivatedRoute } from '@angular/router'; 
 
 @Component({
   selector: 'app-detail1',
@@ -9,176 +9,170 @@ import { Router } from '@angular/router'; // 1. Bổ sung công cụ Router
   templateUrl: './detail1.html',
   styleUrl: './detail1.css'
 })
-export class Detail1 { // (Hoặc Detail1Component tùy theo máy ntt sinh ra)
+export class Detail1 implements OnInit { 
+  locationData: any = null; // Biến chứa toàn bộ dữ liệu từ Backend
 
-  images: string[] = [
-    'images/ha-long.jpg',   // Ảnh số 0
-    'images/ha-long-2.jpg', // Ảnh số 1 
-    'images/ha-long-3.jpg'  // Ảnh số 2
-  ];
+  images: string[] = ['images/ha-long.jpg']; // Ảnh mặc định
   currentIndex: number = 0;
-  // 2. Mở cửa đón công cụ Router vào nhà
-  constructor(private router: Router, 
-    @Inject(PLATFORM_ID) private platformId: Object
+  
+  // Dữ liệu bình luận mẫu
+  reviews: any[] = [];
+  newReviewRating: number = 5;
+
+  setNewRating(stars: number) {
+    this.newReviewRating = stars;
+  }
+
+  constructor(
+    private router: Router, 
+    private route: ActivatedRoute,
+    @Inject(PLATFORM_ID) private platformId: Object,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef 
   ) {}
 
-  // 3. Định nghĩa hành động cho hàm goBack()
-  goBack() {
-    // Lệnh này sẽ đưa người dùng quay thẳng về trang chủ
-    // (Nếu trang tìm kiếm của ntt có tên khác, ví dụ '/explore', thì ntt sửa lại ở trong ngoặc nhé)
-    this.router.navigate(['/']); 
-  }
-  prevImage() {
-    if (this.currentIndex > 0) {
-      this.currentIndex--;
-    } else {
-      this.currentIndex = this.images.length - 1; // Vòng lại ảnh cuối
-    }
-  }
-
-  // 4. Hàm tiến ảnh
-  nextImage() {
-    if (this.currentIndex < this.images.length - 1) {
-      this.currentIndex++;
-    } else {
-      this.currentIndex = 0; // Vòng lại ảnh đầu
-    }
-  }
-
-  // 5. Hàm bấm thẳng vào dấu chấm tròn
-  setIndex(index: number) {
-    this.currentIndex = index;
-  }
-
-  async ngAfterViewInit() {
-  if (isPlatformBrowser(this.platformId)) {
-    const L = await import('leaflet');
-    await import('leaflet-fullscreen');
-
-    // 1. Cấu hình Icon TRƯỚC TIÊN
-    const iconRetinaUrl = 'images/marker-icon-2x.png';
-    const iconUrl = 'images/marker-icon.png';
-    const shadowUrl = 'images/marker-shadow.png';
-    const iconDefault = L.icon({
-      iconRetinaUrl, iconUrl, shadowUrl,
-      iconSize: [25, 41], iconAnchor: [12, 41],
-      popupAnchor: [1, -34], tooltipAnchor: [16, -28],
-      shadowSize: [41, 41]
+  ngOnInit() {
+    this.route.paramMap.subscribe(params => {
+      const id = params.get('id');
+      if (id) {
+        this.fetchLocationDetail(id);
+      }
     });
-    L.Marker.prototype.options.icon = iconDefault;
+  }
 
-    // 2. Khởi tạo map
-    const lat = 20.9101;
-    const lng = 107.1839;
-    const map = L.map('map-detail', {
-      fullscreenControl: true,
-      dragging: true, 
-      zoomControl: true,
-      attributionControl: false
-    }).setView([lat, lng], 12);
+  getRandomColor() {
+    const colors = ['#00a86b', '#3b82f6', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+    return colors[Math.floor(Math.random() * colors.length)];
+  }
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-      attribution: '© OpenStreetMap'
-    }).addTo(map);
+  // HÀM KÉO DỮ LIỆU TỪ BACKEND
+  async fetchLocationDetail(id: string) {
+    try {
+      const response = await fetch(`http://localhost:8000/api/locations/${id}`);
+      if (response.ok) {
+        this.locationData = await response.json();
 
-    // 3. Bây giờ mới tạo Marker (nó sẽ lấy cấu hình icon bên trên)
-    L.marker([lat, lng]).addTo(map)
-      .bindPopup("Vịnh Hạ Long")
-      .openPopup();
+        // 1. Cập nhật ảnh
+        if (this.locationData.images && this.locationData.images.length > 0) {
+           this.images = this.locationData.images;
+        }
+
+        // 2. Vẽ bản đồ
+        if (this.locationData.latitude && this.locationData.longitude) {
+           this.initMap(this.locationData.latitude, this.locationData.longitude, this.locationData.name);
+        }
+
+        // 3. MAP DỮ LIỆU REVIEWS TỪ BACKEND VÀO UI (Đã thêm bộ lọc Approved)
+        if (this.locationData.reviews && this.locationData.reviews.length > 0) {
+          
+          // Lọc chỉ lấy các đánh giá đã được duyệt (hoặc dữ liệu cũ chưa có cột status)
+          const approvedReviews = this.locationData.reviews.filter((r: any) => 
+               r.status === 'approved' || !r.status
+          );
+
+          this.reviews = approvedReviews.map((r: any) => ({
+            id: r.review_id,
+            name: r.guest_name || 'Khách ẩn danh',
+            avatar: (r.guest_name ? r.guest_name.charAt(0) : 'U').toUpperCase(),
+            bgColor: this.getRandomColor(),
+            rating: r.rating,
+            text: r.comment,
+            helpfulCount: Math.floor(Math.random() * 20),
+            isLiked: false,
+            dateStr: 'Gần đây',
+            replies: [],
+            showReplyInput: false
+          }));
+        } else {
+          this.reviews = []; 
+        }
+
+        // ÉP ANGULAR VẼ LẠI GIAO DIỆN NGAY LẬP TỨC 
+        this.cdr.detectChanges();
+      }
+    } catch (error) {
+      console.error("Lỗi khi tải chi tiết địa điểm:", error);
+    }
+  }
+
+  // HÀM KHỞI TẠO BẢN ĐỒ TÁCH RỜI
+  async initMap(lat: number, lng: number, placeName: string) {
+    if (isPlatformBrowser(this.platformId)) {
+      const L = await import('leaflet');
+      await import('leaflet-fullscreen');
+
+      const iconDefault = L.icon({
+        iconRetinaUrl: 'images/marker-icon-2x.png',
+        iconUrl: 'images/marker-icon.png',
+        shadowUrl: 'images/marker-shadow.png',
+        iconSize: [25, 41], iconAnchor: [12, 41],
+        popupAnchor: [1, -34], tooltipAnchor: [16, -28],
+        shadowSize: [41, 41]
+      });
+      L.Marker.prototype.options.icon = iconDefault;
+
+      const map = L.map('map-detail', {
+        fullscreenControl: true, dragging: true, zoomControl: true, attributionControl: false
+      }).setView([lat, lng], 13);
+
+      L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+
+      L.marker([lat, lng]).addTo(map)
+        .bindPopup(`<b>${placeName}</b>`)
+        .openPopup();
+    }
+  }
+
+  // --- CÁC HÀM XỬ LÝ GIAO DIỆN GIỮ NGUYÊN ---
+  goBack() { this.router.navigate(['/']); }
+  prevImage() { this.currentIndex = this.currentIndex > 0 ? this.currentIndex - 1 : this.images.length - 1; }
+  nextImage() { this.currentIndex = this.currentIndex < this.images.length - 1 ? this.currentIndex + 1 : 0; }
+  setIndex(index: number) { this.currentIndex = index; }
+  onFilterChange(event: any) { /* Logic lọc */ }
+  toggleLike(review: any) { 
+    if (review.isLiked) { review.helpfulCount--; review.isLiked = false; } 
+    else { review.helpfulCount++; review.isLiked = true; }
+  }
+  toggleReplyInput(review: any) { review.showReplyInput = !review.showReplyInput; }
+  submitReply(review: any, text: string) { /* Logic phản hồi */ }
+  
+  // HÀM ĐĂNG ĐÁNH GIÁ (Chỉ lưu vào DB và chờ duyệt)
+  async submitNewReview(name: string, text: string) {
+    if (!text.trim()) return;
+
+    const finalName = name.trim() ? name.trim() : 'Khách ẩn danh';
+    const rating = this.newReviewRating;
+
+    // Payload gửi xuống DB
+    const reviewPayload = {
+      locationId: this.locationData.location_id || this.locationData.locationId, 
+      guestName: finalName,
+      rating: rating,
+      comment: text
+    };
+
+    try {
+      const response = await fetch('http://localhost:8000/api/reviews', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(reviewPayload)
+      });
+
+      if (response.ok) {
+        // Reset lại điểm đánh giá sau khi gửi thành công
+        this.newReviewRating = 5; 
+        this.cdr.detectChanges(); 
+        
+        // Hiện thông báo cho người dùng biết là đã được lưu nhưng chờ duyệt
+        alert('Cảm ơn bạn! Đánh giá đã được gửi và đang chờ Quản trị viên duyệt.');
+      } else {
+        alert('Có lỗi xảy ra khi lưu đánh giá. Vui lòng thử lại!');
+      }
+    } catch (error) {
+      console.error("Lỗi kết nối API:", error);
+      alert('Không thể kết nối đến máy chủ Backend!');
+    }
   }
 }
-// 1. Mảng dữ liệu bình luận động
-  reviews: any[] = [
-    {
-      id: 1, name: 'Hoàng Nam', avatar: 'H', bgColor: '#00a86b', rating: 5,
-      text: 'Chuyến đi tuyệt vời! Du thuyền rất sang trọng và đồ ăn ngon. Chắc chắn sẽ quay lại.',
-      helpfulCount: 30, isLiked: false, dateStr: '2 ngày trước', timestamp: 4, // timestamp mô phỏng độ mới
-      replies: [], showReplyInput: false
-    },
-    {
-      id: 2, name: 'Linh Chi', avatar: 'L', bgColor: '#3b82f6', rating: 4,
-      text: 'Cảnh sắc Hạ Long thực sự hùng vĩ. Hang Sửng Sốt đẹp hơn mình tưởng tượng rất nhiều.',
-      helpfulCount: 24, isLiked: false, dateStr: '4 ngày trước', timestamp: 3,
-      replies: [
-        // Đây là ví dụ một phản hồi đã có sẵn
-        { name: 'Việt Nam Travel', text: 'Cảm ơn Linh Chi đã lựa chọn dịch vụ của chúng tôi!', dateStr: '3 ngày trước' }
-      ], 
-      showReplyInput: false
-    },
-    {
-      id: 3, name: 'Tuấn Anh', avatar: 'T', bgColor: '#f59e0b', rating: 3,
-      text: 'Thời tiết tháng 11 siêu đẹp, chụp ảnh góc nào cũng mê. Tuy nhiên cuối tuần hơi đông khách.',
-      helpfulCount: 45, isLiked: false, dateStr: '7 ngày trước', timestamp: 2,
-      replies: [], showReplyInput: false
-    },
-    {
-      id: 4, name: 'Mai Phương', avatar: 'M', bgColor: '#ef4444', rating: 5,
-      text: 'Dịch vụ 5 sao. Chèo Kayak hơi mỏi tay tí nhưng là một trải nghiệm rất đáng để thử!',
-      helpfulCount: 12, isLiked: false, dateStr: '10 ngày trước', timestamp: 1,
-      replies: [], showReplyInput: false
-    }
-  ];
-
-  // 2. Hàm xử lý Sắp xếp bình luận
-  onFilterChange(event: any) {
-    const criterion = event.target.value;
-    if (criterion === 'helpful') {
-      this.reviews.sort((a, b) => b.helpfulCount - a.helpfulCount); // Nhiều tim nhất lên đầu
-    } else if (criterion === 'oldest') {
-      this.reviews.sort((a, b) => a.timestamp - b.timestamp); // 5 sao lên đầu
-    } else if (criterion === 'recent') {
-      this.reviews.sort((a, b) => b.timestamp - a.timestamp); // Mới nhất lên đầu
-    }
-  }
-
-  // 3. Hàm thả tim (Bấm vào tăng tim, bấm lại trừ tim)
-  toggleLike(review: any) {
-    if (review.isLiked) {
-      review.helpfulCount--;
-      review.isLiked = false;
-    } else {
-      review.helpfulCount++;
-      review.isLiked = true;
-    }
-  }
-
-  // 4. Hàm Bật/Tắt ô nhập phản hồi
-  toggleReplyInput(review: any) {
-    review.showReplyInput = !review.showReplyInput;
-  }
-
-  // 5. Hàm Gửi phản hồi mới
-  submitReply(review: any, text: string) {
-    if (!text.trim()) return; // Không cho gửi nội dung trống
-    review.replies.push({
-      name: 'Bạn', // Giả lập người dùng hiện tại
-      text: text,
-      dateStr: 'Vừa xong'
-    });
-    review.showReplyInput = false; // Gửi xong thì ẩn ô nhập đi
-  }
-  // Hàm đăng đánh giá mới của chính người dùng (ntt)
-  submitNewReview(text: string) {
-    if (!text.trim()) return; // Chặn gửi nội dung trống
-
-    // Lấy ID lớn nhất hiện tại để tạo ID mới
-    const newId = this.reviews.length > 0 ? Math.max(...this.reviews.map(r => r.id)) + 1 : 1;
-    
-    // Đẩy bình luận mới vào đầu mảng (unshift)
-    this.reviews.unshift({
-      id: newId,
-      name: 'ntt', // Tên mặc định của bạn
-      avatar: 'N',
-      bgColor: '#111827', // Nền đen cho avatar nổi bật
-      rating: 5, // Tạm thời mặc định cho 5 sao
-      text: text,
-      helpfulCount: 0,
-      isLiked: false,
-      dateStr: 'Vừa xong',
-      timestamp: Date.now(), // Lấy thời gian thực để bộ lọc "Mới nhất" hoạt động chuẩn xác
-      replies: [],
-      showReplyInput: false
-    });
-  }
-}
-

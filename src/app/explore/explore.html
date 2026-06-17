@@ -11,7 +11,6 @@
                 <!-- Bố cục 2 cột -->
                 <div class="explore-layout">
                     
-                    <!-- Cột trái: Bộ lọc (Sidebar) -->
                     <aside class="sidebar-filter">
                         <h3 class="filter-title"><i class="fa-solid fa-filter"></i> Bộ lọc tìm kiếm</h3>
                         
@@ -19,127 +18,68 @@
                             <label>Tên địa điểm / Tỉnh thành</label>
                             <div class="search-input">
                                 <i class="fa-solid fa-magnifying-glass"></i>
-                                <input type="text" placeholder="Nhập từ khóa...">
+                                <input type="text" placeholder="Nhập từ khóa..." [(ngModel)]="searchKeyword" (keyup.enter)="applyFilters()">
                             </div>
                         </div>
                         
                         <div class="filter-section">
                             <label>Vùng miền</label>
                             <div class="checkbox-group"> 
-                                <label><input type="radio" name="region" value="tat-ca" checked> Tất cả</label>
-                                <label><input type="radio" name="region" value="mien-bac"> Miền Bắc</label>
-                                <label><input type="radio" name="region" value="mien-trung"> Miền Trung</label>
-                                <label><input type="radio" name="region" value="mien-nam"> Miền Nam</label>
+                                <label><input type="radio" name="region" value="tat-ca" [(ngModel)]="searchRegion"> Tất cả</label>
+                                <label><input type="radio" name="region" value="mien-bac" [(ngModel)]="searchRegion"> Miền Bắc</label>
+                                <label><input type="radio" name="region" value="mien-trung" [(ngModel)]="searchRegion"> Miền Trung</label>
+                                <label><input type="radio" name="region" value="mien-nam" [(ngModel)]="searchRegion"> Miền Nam</label>
                             </div>
                         </div>
 
                         <div class="filter-section">
-                            <label>Danh mục</label>
-                            <div class="checkbox-group">
-                                <label><input type="checkbox" checked> Tất cả</label>
-                                <label><input type="checkbox"> Sinh thái</label>
-                                <label><input type="checkbox"> Di tích lịch sử</label>
-                                <label><input type="checkbox"> Biển đảo</label>
-                                <label><input type="checkbox"> Khu vui chơi</label>
-                            </div>
+                                <h4>Danh mục</h4>
+
+                                <label style="font-weight: normal; display: block; margin-bottom: 8px;">
+                                    <input type="radio" name="category" value="tat-ca" [(ngModel)]="selectedCategory">
+                                    Tất cả
+                                </label>
+
+                                @for (cat of categories(); track cat.category_id) {
+                                    <label style="font-weight: normal; display: block; margin-bottom: 8px;">
+                                        <input type="radio" name="category" [value]="cat.name" [(ngModel)]="selectedCategory">
+                                        {{ cat.name }}
+                                    </label>
+    }
                         </div>
 
-                        <button class="btn-apply">Áp dụng bộ lọc</button>
+                        <button class="btn-apply" (click)="applyFilters()">Áp dụng bộ lọc</button>
                     </aside>
 
-                    <!-- Cột phải: Kết quả -->
                     <div class="explore-content">
                         <div class="result-bar">
-                            Tìm thấy <strong>5</strong> kết quả phù hợp
+                            Tìm thấy <strong style="color: #00a86b;">{{ filteredLocations().length }}</strong> kết quả phù hợp
                         </div>
                         
-                        <!-- Lưới danh sách (Tái sử dụng class card cũ, thêm class grid-3) -->
                         <div class="card-grid grid-3">
-                            <!-- Card 1 -->
-                            <div class="card" (click)="goToDetail1()" style="cursor: pointer;">
-                                <div class="card-image">
-                                    <img src="images/ha-long.jpg" alt="Vịnh Hạ Long">
-                                    <div class="badge">BIỂN ĐẢO</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                            @for (place of filteredLocations(); track place.id) {
+                                <div class="card" (click)="goToDetail(place.id)" style="cursor: pointer;">
+                                    <div class="card-image">
+                                        <img src="images/ha-long.jpg" [alt]="place.name">
+                                        <div class="badge" [style.background]="getBadgeColor(place.category)">{{ place.category | uppercase }}</div>
+                                        <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                    </div>
+                                    <div class="card-content">
+                                        <h3>{{ place.name }}</h3>
+                                        <p class="address"><i class="fa-solid fa-location-dot"></i> {{ place.province }}</p>
+                                        <p class="desc">{{ place.description ? place.description.substring(0, 80) : 'Chưa có mô tả' }}...</p>
+                                        <div class="views"><i class="fa-regular fa-eye"></i> {{ place.views || 0 }} lượt xem</div>
+                                    </div>
                                 </div>
-                                <div class="card-content">
-                                    <h3>Vịnh Hạ Long</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Ninh</p>
-                                    <p class="desc">Vịnh Hạ Long là một di sản thiên nhiên thế giới, nổi bật với hàng ng...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 15.420 lượt xem</div>
-                                </div>
-                            </div>
-                            <!-- Card 2 -->
-                            <div class="card">
-                                <div class="card-image">
-                                    <img src="images/hoi-an.jpg" alt="Phố cổ Hội An">
-                                    <div class="badge" style="background:#00a86b;">DI TÍCH LỊCH SỬ</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.7</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Phố cổ Hội An</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Quảng Nam</p>
-                                    <p class="desc">Hội An là một thành phố cổ kính mang đậm nét kiến trúc truyền...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 12.350 lượt xem</div>
-                                </div>
-                            </div>
+                            }
 
-                            <!-- Card 3 -->
-                            <div class="card">
-                                <div class="card-image">
-                                    <img src="images/cau-ban-tay.jpg" alt="Cầu Vàng">
-                                    <div class="badge">KHU VUI CHƠI</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.6</div>
+                            @if (filteredLocations().length === 0) {
+                                <div style="grid-column: span 3; text-align: center; padding: 50px 20px;">
+                                    <img src="images/empty-state.png" onerror="this.style.display='none'" style="max-width: 150px; opacity: 0.5; margin-bottom: 20px;">
+                                    <h3 style="color: #555;">Không tìm thấy địa điểm nào</h3>
+                                    <p style="color: #777;">Hãy thử thay đổi điều kiện lọc hoặc nhập từ khóa khác nhé!</p>
                                 </div>
-                                <div class="card-content">
-                                    <h3>Cầu Vàng</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Đà Nẵng</p>
-                                    <p class="desc">Cây cầu có thiết kế độc đáo với đôi bàn tay khổng lồ bằng đá nâng đỡ,...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 9.840 lượt xem</div>
-                                </div>
-                            </div>
-                            <!-- Card 4 -->
-                            <div class="card">
-                                <div class="card-image">
-                                    <img src="images/ruong-bac-thang.jpg" alt="Ruộng Bậc Thang Sapa">
-                                    <div class="badge">SINH THÁI</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.9</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Ruộng bậc thang Sapa</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Lào Cai</p>
-                                    <p class="desc">Sapa nổi bật với cảnh quan ruộng bậc thang tuyệt đẹp trải dài trên các sườn đồi...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 11.020 lượt xem</div>
-                                </div>
-                            </div>
-                            <!-- Card 5 -->
-                            <div class="card">
-                                <div class="card-image">
-                                    <img src="images/phu-quoc.jpg" alt="Phú Quốc">
-                                    <div class="badge">BIỂN ĐẢO</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.5</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Đảo ngọc Phú Quốc</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Kiên Giang</p>
-                                    <p class="desc">Thiên đường nghỉ dưỡng với những bãi biển trong xanh, cát trắng mịn màng và...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 20.100 lượt xem</div>
-                                </div>
-                            </div>
-                            <!-- Card 6 -->
-                            <div class="card">
-                                <div class="card-image">
-                                    <img src="images/hue.jpg" alt="Cố đô Huế">
-                                    <div class="badge">DI TÍCH LỊCH SỬ</div>
-                                    <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
-                                </div>
-                                <div class="card-content">
-                                    <h3>Quần thể Cố đô Huế</h3>
-                                    <p class="address"><i class="fa-solid fa-location-dot"></i> Thừa Thiên Huế</p>
-                                    <p class="desc">Khám phá nét đẹp uy nghi, cổ kính của quần thể di tích kiến trúc cung đình triều Nguyễn...</p>
-                                    <div class="views"><i class="fa-regular fa-eye"></i> 18.500 lượt xem</div>
-                                </div>
-                            </div>
+                            }
                         </div>
                     </div>
                 </div>

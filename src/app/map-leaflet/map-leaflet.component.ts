@@ -1,52 +1,139 @@
-import { Component, AfterViewInit, PLATFORM_ID, Inject } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
+import { Component, AfterViewInit, PLATFORM_ID, Inject, signal, OnInit } from '@angular/core';
+import { isPlatformBrowser, CommonModule } from '@angular/common';
 import { Router } from '@angular/router'; 
 import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-map',
   standalone: true,
-  imports: [FormsModule],
+  imports: [FormsModule, CommonModule],
   templateUrl: './map-leaflet.component.html',
   styleUrls: ['./map-leaflet.component.css']
 })
-export class mapleafletcomponent implements AfterViewInit {
-  // Đưa hai biến này ra làm thuộc tính của Class để dùng chung giữa các hàm
+export class mapleafletcomponent implements OnInit, AfterViewInit {
   private map: any;
   private L: any;
   private markerInstances: any[] = []; 
+  private searchMarkerInstance: any = null; 
 
-  // Các biến liên kết với Giao diện (HTML)
   searchQuery: string = '';
   selectedCategory: string = 'All';
 
-  // Danh sách dữ liệu gốc của bạn
-  locations = [
-    { name: 'Vịnh Hạ Long', lat: 20.9101, lng: 107.1839, path: '/vinh-ha-long', category: 'Biển đảo', info: 'Nằm tại QUẢNG NINH - Di sản thiên nhiên thế giới với hàng ngàn đảo đá vôi kỳ vĩ trên mặt nước xanh biếc.', imageUrl: 'images/ha-long-bay.jpg'},
-    { name: 'Ruộng bậc thang', lat: 22.356464, lng: 103.873802, path: '/sapa', category: 'Sinh thái', info: 'Nằm tại SAPA - Tuyệt tác ruộng bậc thang uốn lượn bên sườn núi, mang vẻ đẹp thơ mộng vùng cao.', imageUrl: 'images/ruong-bac-thang.jpg' },
-    { name: 'Hội An', lat: 15.8801, lng: 108.3380, path: '/hoi-an', category: 'Di tích lịch sử', info: 'Nằm tại QUẢNG NAM - Thương cảng cổ kính với những ngôi nhà tường vàng, đèn lồng rực rỡ và nét hoài cổ.', imageUrl: 'images/hoi-an.jpg' },
-    { name: 'Cầu Vàng', lat: 15.996167, lng: 107.988083, path: '/cau-vang', category: 'Khu vui chơi', info:'Nằm tại ĐÀ NẴNG - Nổi tiếng với đôi bàn tay khổng lồ nâng đỡ cây cầu.', imageUrl: 'images/cau-ban-tay.jpg' },
-    { name: 'Đảo Ngọc', lat: 10.224090, lng: 103.971560, path: '/dao-ngoc', category: 'Biển đảo', info: 'Nằm tại PHÚ QUỐC - Thiên đường nghỉ dưỡng với những bãi biển cát trắng mịn và làn nước trong vắt.', imageUrl: 'images/phu-quoc.jpg' },
-    { name: 'Tràng An', lat: 20.254109, lng: 105.918458, path: '/trang-an', category: 'Sinh thái', info: 'Nằm tại NINH BÌNH - Là điểm nhấn của cố đô Hoa Lư, khu du lịch này đã được UNESCO công nhận là di sản thiên nhiên thế giới', imageUrl: 'images/trang-an.jpg' },
-        { name: 'Hoàng thành Thăng Long', lat: 21.0333, lng: 105.8500, path: 'hoang-thanh-thang-long', category: 'Di tích lịch sử', info: 'Nằm tại Hà Nội - Nơi đây hiện lưu giữ vô số hiện vật, các công trình kiến trúc đã phản ánh kỹ thuật xây dựng đỉnh cao và mang đậm những giá trị lịch sử, văn hóa và nghệ thuật truyền thống. ', imageUrl: 'images/hoang-thanh-thang-long.jpg' },
-        { name: 'Thác Datanla', lat: 11.90116, lng: 108.44903, path: '/Thac-atanla', category: 'Khu vui chơi', info:'Nằm tại ĐÀ LẠT - Khu du lịch Thác Datanla được mệnh danh là "thiên đường cảm giác mạnh" lớn nhất Đà Lạt', imageUrl: 'images/thac-datanla.jpg' },
-        { name: 'Quần thể Cố đô Huế', lat: 16.468889, lng: 107.575556, path: '/co-do-hue', category: 'Di tích lịch sử', info:'Nằm tại Huế - là Di sản văn hóa thế giới được UNESCO công nhận vào năm 1993, tọa lạc dọc hai bờ sông Hương thuộc thành phố Huế và các vùng phụ cận. Đây từng là kinh đô của Việt Nam dưới triều đại nhà Nguyễn từ năm 1802 đến năm 1945.', imageUrl: 'images/hue.jpg' },
-        { name: 'Mũi Né', lat: 10.9344, lng: 108.2766, path: '/mui-ne', category: 'Biển đảo', info:'Nằm tại Phan Thiết - Nơi đây được mệnh danh là "kinh đô resort" của Việt Nam nhờ sở hữu đường bờ biển dài thơ mộng và những đồi cát mịn hoang sơ.', imageUrl: 'images/mui-ne.jpg' },
-  ];
+  // 🌟 GOM TOÀN BỘ VÀO MỘT MẢNG DUY NHẤT (Không chia Top 5 nữa)
+  locations: any[] = [];
+  categories = signal<any[]>([]);
 
   constructor(
     @Inject(PLATFORM_ID) private platformId: Object,
     private router: Router 
   ) {}
 
-  // Hàm tạo Icon theo màu sắc (giữ nguyên của bạn)
+  ngOnInit() {
+    this.loadCategories();
+    this.loadRealLocations();
+  }
+
+  removeAccents(str: string): string {
+    if (!str) return '';
+    return str.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').replace(/Đ/g, 'D');
+  }
+
+  async loadCategories() {
+    try {
+      const response = await fetch('http://localhost:8000/api/categories');
+      if (response.ok) {
+        this.categories.set(await response.json());
+      }
+    } catch (error) {
+      console.error("Lỗi tải danh mục:", error);
+    }
+  }
+
+  async loadRealLocations() {
+    try {
+      const response = await fetch('http://localhost:8000/api/locations');
+      if (response.ok) {
+        const rawData = await response.json();
+        
+        // Lấy tất cả địa điểm đang hiển thị (active/approved)
+        const activeData = rawData.filter((loc: any) => loc.status === 'active' || loc.status === 'approved');
+
+        const mappedData = activeData.map((loc: any) => ({
+          id: loc.id,
+          name: loc.name,
+          lat: loc.latitude,
+          lng: loc.longitude,
+          category: loc.category,
+          info: `Nằm tại ${loc.province} - ${loc.description ? loc.description.substring(0, 60) : 'Đang cập nhật'}...`,
+          imageUrl: 'images/ha-long.jpg',
+          views: loc.views || 0,
+          path: `/detail/${loc.id}` 
+        }));
+
+        mappedData.sort((a: any, b: any) => b.views - a.views);
+
+        // 🌟 ÉP TẤT CẢ DỮ LIỆU LÊN BẢN ĐỒ NGAY LẬP TỨC
+        this.locations = mappedData;
+
+        if (this.map) {
+          this.applyCombinedFilter(false);
+        }
+      }
+    } catch (error) {
+      console.error("Lỗi tải địa điểm:", error);
+    }
+  }
+
+  ngAfterViewInit() {
+    if (isPlatformBrowser(this.platformId)) {
+      import('leaflet').then(leaflet => {
+        this.L = leaflet;
+        this.map = this.L.map('map', {
+          zoomControl: false,
+          attributionControl: false
+        }).setView([16.0, 108.0], 5);
+
+        this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
+
+        if (this.locations.length > 0) {
+          this.applyCombinedFilter(false);
+        }
+      });
+    }
+  }
+  
+  getBadgeColor(category: string): string {
+    const cat = category?.toLowerCase() || '';
+    
+    // Ưu tiên 1: Các màu cố định cho các danh mục quen thuộc
+    if (cat.includes('sinh thái') || cat.includes('thiên nhiên') || cat.includes('núi')) return '#32CD32'; // Xanh lá
+    if (cat.includes('lịch sử') || cat.includes('di tích') || cat.includes('văn hóa')) return '#FFD700'; // Vàng
+    if (cat.includes('biển') || cat.includes('đảo')) return '#1E90FF'; // Xanh dương
+    if (cat.includes('vui chơi') || cat.includes('giải trí')) return '#FF4500'; // Cam đỏ
+    if (cat.includes('nghỉ dưỡng') || cat.includes('resort')) return '#9370DB'; // Tím
+    if (cat.includes('thành phố') || cat.includes('đô thị')) return '#607D8B'; // Xanh xám
+    
+    // Ưu tiên 2: Thuật toán tự động cấp màu ngẫu nhiên (nhưng cố định) cho danh mục mới
+    // Đảm bảo không bao giờ có danh mục nào bị màu xám chán ngắt nữa!
+    const colorPalette = ['#e84393', '#00cec9', '#6c5ce7', '#fdcb6e', '#e17055', '#00b894', '#16a085'];
+    let hash = 0;
+    for (let i = 0; i < category.length; i++) {
+      hash = category.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    return colorPalette[Math.abs(hash) % colorPalette.length];
+  }
+
   getIconForCategory(category: string) {
-    let iconUrl = 'assets/images/marker-icon.png';
-    switch (category) {
-      case 'Sinh thái': iconUrl = 'images/marker-icon-green.png'; break;
-      case 'Di tích lịch sử': iconUrl = 'images/marker-icon-gold.png'; break;
-      case 'Biển đảo': iconUrl = 'images/marker-icon.png'; break;
-      case 'Khu vui chơi': iconUrl = 'images/marker-icon-red.png'; break;
+    const cat = category?.toLowerCase() || '';
+    let iconUrl = 'images/marker-icon.png'; // Mặc định xanh dương (Biển đảo hoặc các mục khác)
+
+    // Khớp icon bản đồ với nhóm từ khóa
+    if (cat.includes('sinh thái') || cat.includes('thiên nhiên') || cat.includes('núi')) {
+      iconUrl = 'images/marker-icon-green.png';
+    } else if (cat.includes('lịch sử') || cat.includes('di tích') || cat.includes('văn hóa')) {
+      iconUrl = 'images/marker-icon-gold.png';
+    } else if (cat.includes('vui chơi') || cat.includes('giải trí')) {
+      iconUrl = 'images/marker-icon-red.png';
     }
 
     return this.L.icon({ 
@@ -59,34 +146,12 @@ export class mapleafletcomponent implements AfterViewInit {
     });
   }
 
-  async ngAfterViewInit() {
-    if (isPlatformBrowser(this.platformId)) {
-      this.L = await import('leaflet');
-      await import('leaflet-fullscreen');
-      (window as any).L = this.L; 
-
-      this.map = this.L.map('map', {
-        zoomControl: false,          
-        fullscreenControl: false,    
-        attributionControl: false
-      } as any).setView([16.0, 108.0], 5);
-
-      this.L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(this.map);
-
-      // Vẽ toàn bộ địa điểm lên bản đồ khi vừa vào trang (Mặc định không tự động bay)
-      this.renderMarkers(this.locations, false);
-    }
-  }
-
-  // Phụ trách xóa ghim cũ và vẽ ghim mới khi tìm kiếm / lọc
   renderMarkers(filteredLocations: any[], shouldFly: boolean = false) {
     if (!this.map) return;
 
-    // 1. Xóa sạch các ghim hiện tại trên bản đồ
     this.markerInstances.forEach(marker => this.map.removeLayer(marker));
     this.markerInstances = [];
 
-    // 2. Duyệt qua danh sách đã lọc để vẽ lại ghim mới
     filteredLocations.forEach(loc => {
       const marker = this.L.marker([loc.lat, loc.lng], { 
         icon: this.getIconForCategory(loc.category) 
@@ -94,7 +159,7 @@ export class mapleafletcomponent implements AfterViewInit {
 
       marker.bindTooltip(`
         <div class="my-tooltip-card">
-          <img src="${loc.imageUrl}" alt="${loc.name}" class="my-tooltip-img" />
+          <img src="${loc.imageUrl}" alt="${loc.name}" class="my-tooltip-img" onerror="this.src='images/ha-long.jpg'" />
           <div class="my-tooltip-text">
             <b>${loc.name}</b>
             <span>${loc.info}</span>
@@ -111,67 +176,107 @@ export class mapleafletcomponent implements AfterViewInit {
         this.router.navigate([loc.path]);
       });
 
-      // Lưu ghim vào mảng quản lý
       this.markerInstances.push(marker);
     });
 
-    // LOGIC CAMERA: Chỉ tự động bay khi kết quả bằng 1 VÀ hành động đó đến từ việc tìm kiếm chủ động
     if (filteredLocations.length === 1 && shouldFly) {
-      this.map.flyTo([filteredLocations[0].lat, filteredLocations[0].lng], 10, {
+      this.map.flyTo([filteredLocations[0].lat, filteredLocations[0].lng], 15, {
         animate: true,
-        duration: 1.5 // Thời gian hiệu ứng bay (giây)
+        duration: 1.5 
       });
-      // TỰ ĐỘNG XÓA CHỮ TRONG Ô TÌM KIẾM SAU KHI ĐÃ BAY ĐẾN GHIM THÀNH CÔNG
       this.searchQuery = '';
     }
   }
 
-  // Hàm chạy khi người dùng bấm tìm kiếm (Enter / Kính lúp)
   onSearchSubmit() {
-    const currentSearch = this.searchQuery.trim().toLowerCase();
+    const currentSearch = this.removeAccents(this.searchQuery.trim().toLowerCase());
+    if (currentSearch === '') return;
     
-    // Nếu có gõ chữ tìm kiếm, tự động tìm danh mục của ghim đó để nhảy sáng Tab cho đồng bộ
-    if (currentSearch !== '') {
-      const foundLoc = this.locations.find(loc => loc.name.toLowerCase().includes(currentSearch));
-      if (foundLoc) {
-        this.selectedCategory = foundLoc.category;
-      }
+    // 🌟 Tìm kiếm trực tiếp trong mảng tổng
+    const foundLoc = this.locations.find(loc => this.removeAccents((loc.name || '').toLowerCase()).includes(currentSearch));
+    
+    if (foundLoc) {
+      this.searchQuery = ''; 
+      this.selectedCategory = 'All'; 
+      this.applyCombinedFilter(false); 
+      this.displaySearchMarker(foundLoc);
+    } else {
+      alert('Không tìm thấy địa điểm du lịch này trong hệ thống!');
     }
-
-    this.applyCombinedFilter(true); // Cho phép bay camera đến địa điểm tìm kiếm
   }
 
-  // Hàm chạy khi người dùng bấm chọn các Tab danh mục nằm ngang
+  displaySearchMarker(loc: any) {
+    if (!this.map || !this.L) return;
+
+    this.clearSearchMarker(); 
+
+    this.searchMarkerInstance = this.L.marker([loc.lat, loc.lng], {
+      icon: this.getIconForCategory(loc.category)
+    }).addTo(this.map);
+
+    this.searchMarkerInstance.bindTooltip(`
+      <div class="my-tooltip-card">
+        <img src="${loc.imageUrl}" alt="${loc.name}" class="my-tooltip-img" onerror="this.src='images/ha-long.jpg'" />
+        <div class="my-tooltip-text">
+          <b>${loc.name}</b>
+          <span>${loc.info}</span>
+        </div>
+      </div>
+    `, {
+      permanent: false,
+      direction: 'right',
+      offset: [15, 0],
+      className: 'custom-tooltip-container' 
+    });
+
+    this.searchMarkerInstance.on('click', () => {
+      this.router.navigate([loc.path]);
+    });
+
+    this.map.flyTo([loc.lat, loc.lng], 15, {
+      animate: true,
+      duration: 1.5
+    });
+  }
+
+  clearSearchMarker() {
+    if (this.searchMarkerInstance && this.map) {
+      this.map.removeLayer(this.searchMarkerInstance);
+      this.searchMarkerInstance = null;
+    }
+  }
+
   filterByCategory(category: string) {
     this.selectedCategory = category;
+    this.searchQuery = ''; 
+    this.clearSearchMarker(); 
     this.applyCombinedFilter(false);
-    // ĐƯA CAMERA VỀ KHUNG RỘNG TOÀN CẢNH VIỆT NAM MƯỢT MÀ KHI ĐỔI TAB
+    
     if (this.map) {
       this.map.setView([16.0, 108.0], 5, {
         animate: true,
-        duration: 1.5 ,// Thời gian thu nhỏ và di chuyển camera (giây)
-        easeLinearity: 0.25, // Kiểm soát tốc độ lướt mượt ở điểm đầu và điểm cuối
-        noMoveStart: true    // Ngăn chặn việc ngắt hiệu ứng đột ngột giữa chừng của Leaflet
+        duration: 1.5,
+        easeLinearity: 0.25, 
+        noMoveStart: true    
       });
     }
   }
 
-  // Hàm cốt lõi gom cả Gõ chữ tìm kiếm + Bấm nút phân loại lại với nhau
   applyCombinedFilter(isSearching: boolean = false) {
+    const currentSearch = this.removeAccents(this.searchQuery.trim().toLowerCase());
     
-    const currentSearch = this.searchQuery.trim().toLowerCase();
-    
+    // 🌟 Nguồn dữ liệu giờ luôn là toàn bộ địa điểm (this.locations)
     const filtered = this.locations.filter(loc => {
-      const matchSearch = loc.name.toLowerCase().includes(currentSearch);
-      
-      // Nếu đang chủ động gõ tìm kiếm chữ, bỏ qua bộ lọc danh mục để tìm thấy trên phạm vi toàn quốc
-      // Còn nếu ô tìm kiếm trống, áp dụng bộ lọc danh mục như bình thường khi click Tab
-      const matchCategory = currentSearch !== '' || this.selectedCategory === 'All' || loc.category === this.selectedCategory;
+      const matchSearch = currentSearch === '' || this.removeAccents((loc.name || '').toLowerCase()).includes(currentSearch);
+      const matchCategory = this.selectedCategory === 'All' || loc.category === this.selectedCategory;
       
       return matchSearch && matchCategory;
     });
 
-    // Vẽ lại và truyền trạng thái kiểm soát hiệu ứng di chuyển camera
     this.renderMarkers(filtered, isSearching);
+  }
+
+  scrollTabs(container: HTMLElement, amount: number) {
+    container.scrollLeft += amount;
   }
 }

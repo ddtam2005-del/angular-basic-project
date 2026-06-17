@@ -1,12 +1,7 @@
 .map-leaflet {
   width: 100%;
-  /* Giữ nguyên chiều cao trừ đi header của bạn */
-  height: calc(100vh - 62.4px); 
-  
-
+  height: 100%; /* Căn theo thẻ cha map-wrapper */
   display: flex; 
-  
-  /* Đảm bảo không có lề thừa */
   margin: 0;
   padding: 0;
   overflow: hidden;
@@ -17,32 +12,29 @@
   height: 100%;
   z-index: 1;
 }
-/* Khóa chính: Tạo không gian tương đối để các thành phần con neo vị trí theo nó */
+
 .map-wrapper {
   position: relative; 
   width: 100%;
-  height: calc(100vh - 70px); /* Khít màn hình trừ đi thanh menu trên cùng của bạn */
+  height: calc(100vh - 70px); /* Khít màn hình trừ đi thanh menu trên cùng */
+  overflow: hidden; /* Cấm thanh cuộn thừa xuất hiện ở viền màn hình */
 }
 
-/* Định vị lại thanh controls để ép nằm đè lên trên bản đồ */
 /* ĐỒNG BỘ KHỐI ĐIỀU KHIỂN CHÍNH */
 .map-controls {
   position: absolute;
   top: 15px;
   left: 15px;
-  z-index: 1000; /* Đứng trên layer bản đồ Leaflet */
+  z-index: 1000;
   display: flex;
   flex-direction: row;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
   max-width: calc(100% - 30px);
-  overflow-x: auto;
-  padding-bottom: 5px;
-  pointer-events: auto !important; /* Cho phép các thành phần con nhận sự kiện chuột */
+  pointer-events: auto !important; 
 }
 
-/* NÚT BẤM TÌM KIẾM CHUẨN ĐÃ GOM LẠI */
-/* ĐỊNH DẠNG KHUNG TRẮNG Ô TÌM KIẾM (BẠN ĐANG BỊ THIẾU CÁI NÀY) */
+/* ĐỊNH DẠNG KHUNG TRẮNG Ô TÌM KIẾM */
 .search-box {
   display: flex;
   align-items: center;
@@ -50,18 +42,18 @@
   padding: 4px 12px;
   border-radius: 24px;
   box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-  width: 240px;             /* Ép độ rộng cố định để bao trọn cả chữ và kính lúp */
+  width: 240px;             
   min-width: 240px;
-  height: 36px;             /* Cân bằng chiều cao bằng các tab phân loại */
+  height: 36px;             
   border: 1px solid #dadce0;
   box-sizing: border-box;
 }
 
 /* ĐỊNH DẠNG Ô NHẬP CHỮ BÊN TRONG KHUNG */
 .search-box input {
-  border: none;  /* Xóa đường viền thô mặc định */
-  outline: none ; /* Xóa khung đen khi nhấn chuột vào */
-  width: 100%;              /* Chiếm toàn bộ không gian trống bên trái */
+  border: none;  
+  outline: none ; 
+  width: 100%;              
   font-size: 14px;
   color: #333;
   background: transparent;
@@ -75,8 +67,6 @@
   justify-content: center;
   padding: 4px;
   margin-left: 5px;
-  
-  /* Cực kỳ quan trọng: Ép trình duyệt bắt cú click tại đây, cấm bản đồ nuốt mất sự kiện */
   position: relative;
   z-index: 1010 ;
   pointer-events: auto ; 
@@ -87,10 +77,43 @@
   width: 20px;
   height: 20px;
   display: block;
-  pointer-events: none ; /* Click trúng ảnh sẽ tự động ăn thẳng ra nút button ngoài */
+  pointer-events: none ; 
 }
 
-.category-tabs { display: flex; flex-direction: row; gap: 8px; white-space: nowrap; }
+.category-tabs { 
+  display: flex; 
+  flex-direction: row; 
+  gap: 8px; 
+  white-space: nowrap; 
+  overflow-x: auto;
+  scroll-behavior: smooth; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
+
+.category-tabs::-webkit-scrollbar {
+  display: none; 
+}
+
+.scroll-btn {
+  background: white;
+  border: 1px solid #dadce0;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+  font-size: 14px;
+  color: #555;
+  flex-shrink: 0; 
+  transition: background 0.2s;
+}
+.scroll-btn:hover {
+  background: #f1f3f4;
+}
 .tab-item {
   display: flex;
   align-items: center;
@@ -106,10 +129,6 @@
 }
 .tab-item.active { background-color: #e8f0fe; color: #1a73e8; border-color: #1a73e8; }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
-.green { background-color: #2ecc71; }
-.yellow { background-color: #f1c40f; }
-.blue { background-color: #3498db; }
-.red { background-color: #e74c3c; }
 
 :host ::ng-deep .custom-tooltip-container {
   background: transparent;
@@ -118,34 +137,30 @@
   padding: 0;
 }
 
-/* Ẩn cái mũi tên nhỏ trỏ vào ghim của Leaflet */
 :host ::ng-deep .custom-tooltip-container::before {
   display: none;
 }
 
-/* CSS cho tấm thẻ (Card) của bạn */
 :host ::ng-deep .my-tooltip-card {
   background: white;
   border-radius: 8px;
-  overflow: hidden; /* Cắt phần ảnh thừa để bo góc đẹp hơn */
+  overflow: hidden; 
   box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-  width: 220px; /* Độ rộng của tấm thẻ */
+  width: 220px; 
   display: flex;
   flex-direction: column;
 }
 
-/* CSS cho tấm ảnh */
 :host ::ng-deep .my-tooltip-img {
   width: 100%;
   height: 120px;
-  object-fit: cover; /* Đảm bảo ảnh không bị méo */
+  object-fit: cover; 
 }
 
-/* CSS cho phần chữ bên dưới */
 :host ::ng-deep .my-tooltip-text {
   padding: 10px 12px;
   text-align: left;
-  white-space: normal; /* Cho phép chữ tự động xuống dòng */
+  white-space: normal; 
 }
 
 :host ::ng-deep .my-tooltip-text b {
@@ -162,14 +177,10 @@
   display: block;
 }
 
-/* Hiệu ứng phóng to nhẹ cái ghim khi di chuột vào (tùy chọn) */
 .leaflet-marker-icon {
   transition: transform 0.2s;
+  cursor: pointer;
 }
 .leaflet-marker-icon:hover {
   transform: scale(1.1); 
-}
-/* Đảm bảo marker có con trỏ chuột bàn tay */
-.leaflet-marker-icon {
-  cursor: pointer;
 }

@@ -565,3 +565,55 @@
 .btn-submit-review:hover {
     background: #008f5a;
 }
+/* Trang trí cho ô nhập tên */
+.new-review-box .name-input {
+    width: 100%;
+    padding: 8px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-size: 13px;
+    font-family: inherit;
+    outline: none;
+    transition: all 0.2s;
+    margin-bottom: 5px; /* Cách ô textarea bên dưới một chút */
+}
+
+.new-review-box .name-input:focus {
+    border-color: #00a86b;
+    box-shadow: 0 0 0 2px rgba(0, 168, 107, 0.1);
+}
+
+/* Trang trí khu vực chọn sao đánh giá */
+.star-rating-input {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px; /* Đẩy cách ô nhập nội dung một chút */
+    width: 100%;
+}
+
+.star-rating-input .rating-label {
+    font-size: 13px;
+    color: #4b5563;
+    font-weight: 600;
+}
+
+.star-rating-input .stars {
+    display: flex;
+    gap: 5px;
+    cursor: pointer;
+}
+
+.star-rating-input .stars i {
+    font-size: 16px;
+    color: #d1d5db; /* Xám nhạt cho sao CHƯA chọn */
+    transition: all 0.2s ease;
+}
+
+.star-rating-input .stars i.active {
+    color: #f59e0b; /* Vàng cam cho sao ĐÃ chọn */
+}
+
+.star-rating-input .stars i:hover {
+    transform: scale(1.2); /* Phóng to nhẹ khi di chuột qua */
+}
