@@ -23,11 +23,13 @@
                 <h1>{{ locationData?.name || 'Đang tải dữ liệu...' }}</h1>
                 <div class="stats">
                     <span class="location"><i class="fa-solid fa-location-dot"></i> {{ locationData?.province_name || 'Đang cập nhật' }}</span>
-                    <span class="detail-rating"><i class="fa-solid fa-star"></i> 4.8 / 5</span>
+                    
+                    <span class="detail-rating"><i class="fa-solid fa-star"></i> {{ averageRating }} / 5</span>
+                    
                     <span class="views"><i class="fa-regular fa-eye"></i> {{ locationData?.view_count || 0 }} lượt xem</span>
                 </div>
             </div>
-            </div>
+        </div>
 
         <hr class="divider">
 
@@ -35,9 +37,10 @@
             <div class="left-column">
                 <h2 class="section-title"><i class="fas fa-info-circle"></i> Tổng quan</h2>
                 <p style="white-space: pre-wrap; font-size: 15px; line-height: 1.7;">{{ locationData?.description || 'Chưa có thông tin mô tả chi tiết cho địa điểm này.' }}</p>
-
                 <h3 class="sub-heading"><i class="fas fa-map-signs"></i> Thông tin thêm</h3>
-                <p style="color: #4b5563; line-height: 1.7;">Nơi đây luôn chào đón du khách mọi thời điểm trong năm. Đừng quên chuẩn bị hành trang đầy đủ và chia sẻ những khoảnh khắc tuyệt vời của bạn tại phần bình luận nhé!</p>
+                <p style="color: #4b5563; line-height: 1.7; white-space: pre-wrap;">
+                    {{ locationData?.additionalInfo || 'Nơi đây luôn chào đón du khách mọi thời điểm. Đang cập nhật thêm thông tin...' }}
+                </p>
             </div>
 
             <div class="right-column">

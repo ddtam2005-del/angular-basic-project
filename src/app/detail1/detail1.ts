@@ -18,6 +18,7 @@ export class Detail1 implements OnInit {
   // Dữ liệu bình luận mẫu
   reviews: any[] = [];
   newReviewRating: number = 5;
+  averageRating: string = '0.0';
 
   setNewRating(stars: number) {
     this.newReviewRating = stars;
@@ -83,8 +84,17 @@ export class Detail1 implements OnInit {
             replies: [],
             showReplyInput: false
           }));
+          if (this.reviews.length > 0) {
+            // Cộng tổng số sao của tất cả bình luận
+            const totalStars = this.reviews.reduce((sum, review) => sum + review.rating, 0);
+            // Chia trung bình và làm tròn 1 chữ số thập phân (VD: 4.666 -> 4.7)
+            this.averageRating = (totalStars / this.reviews.length).toFixed(1);
+          } else {
+            this.averageRating = '0.0';
+          }
         } else {
           this.reviews = []; 
+          this.averageRating = '0.0';
         }
 
         // ÉP ANGULAR VẼ LẠI GIAO DIỆN NGAY LẬP TỨC 
