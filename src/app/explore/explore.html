@@ -60,9 +60,9 @@
                             @for (place of filteredLocations(); track place.id) {
                                 <div class="card" (click)="goToDetail(place.id)" style="cursor: pointer;">
                                     <div class="card-image">
-                                        <img src="images/ha-long.jpg" [alt]="place.name">
+                                        <img [src]="place.imageUrl" [alt]="place.name" onerror="this.src='images/ha-long.jpg'">
                                         <div class="badge" [style.background]="getBadgeColor(place.category)">{{ place.category | uppercase }}</div>
-                                        <div class="rating"><i class="fa-solid fa-star"></i> 4.8</div>
+                                        <div class="rating"><i class="fa-solid fa-star"></i> {{ place.averageRating }}</div>
                                     </div>
                                     <div class="card-content">
                                         <h3>{{ place.name }}</h3>

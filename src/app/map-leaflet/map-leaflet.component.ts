@@ -265,13 +265,20 @@ export class mapleafletcomponent implements OnInit, AfterViewInit {
   applyCombinedFilter(isSearching: boolean = false) {
     const currentSearch = this.removeAccents(this.searchQuery.trim().toLowerCase());
     
-    // 🌟 Nguồn dữ liệu giờ luôn là toàn bộ địa điểm (this.locations)
-    const filtered = this.locations.filter(loc => {
+    // Nguồn dữ liệu giờ luôn là toàn bộ địa điểm (this.locations)
+    let filtered = this.locations.filter(loc => {
       const matchSearch = currentSearch === '' || this.removeAccents((loc.name || '').toLowerCase()).includes(currentSearch);
       const matchCategory = this.selectedCategory === 'All' || loc.category === this.selectedCategory;
       
       return matchSearch && matchCategory;
     });
+
+    // 🌟 THÊM ĐÚNG 3 DÒNG NÀY: 
+    // Nếu đang ở tab "Tất cả" và không gõ tìm kiếm -> Chỉ cắt lấy 15 cái đầu tiên (hot nhất) để vẽ
+    // Nếu chuyển sang tab danh mục khác -> Sẽ bỏ qua lệnh cắt này và vẽ đầy đủ
+    if (this.selectedCategory === 'All' && currentSearch === '') {
+      filtered = filtered.slice(0, 10); 
+    }
 
     this.renderMarkers(filtered, isSearching);
   }

@@ -14,7 +14,8 @@ export class Home implements AfterViewInit {
   selectedCategory: string = 'Tất cả'; 
   private map: any; 
   private L: any;   
-  private markerLayers: { instance: any; category: string }[] = []; 
+  private markerLayers: { id: string, instance: any; category: string }[] = []; 
+  topMapLocationIds: string[] = [];
 
   // KHAI BÁO TÍN HIỆU ĐỂ HỨNG DỮ LIỆU TỪ BACKEND
   trendingLocations = signal<any[]>([]);
@@ -122,19 +123,61 @@ export class Home implements AfterViewInit {
       if (response.ok) {
          const allData = await response.json();
 
-         //  Chỉ lấy những địa điểm active 
-         const activeData = allData.filter((loc: any) => 
+         //  Chạy ngầm API chi tiết để rút số sao chuẩn xác
+         // 🌟 LẤY SAO VÀ ẢNH TRUNG BÌNH
+         const formattedData = await Promise.all(allData.map(async (loc: any) => {
+            let avg = '0.0';
+            let imgUrl = 'images/ha-long.jpg';
+
+            try {
+              const detailId = loc.id || loc.locationId || loc.location_id;
+              const detailRes = await fetch(`http://localhost:8000/api/locations/${detailId}`);
+              if (detailRes.ok) {
+                const detailData = await detailRes.json();
+
+                // 📸 LẤY ẢNH ĐẦU TIÊN
+                if (detailData.images && detailData.images.length > 0) {
+                    const firstImg = detailData.images[0];
+                    imgUrl = typeof firstImg === 'string' ? firstImg : firstImg.imageUrl;
+                    if (imgUrl && !imgUrl.startsWith('http')) {
+                        imgUrl = 'http://localhost:8000/uploads/' + imgUrl;
+                    }
+                }
+
+                // LẤY SỐ SAO TRUNG BÌNH
+                if (detailData.reviews && detailData.reviews.length > 0) {
+                  const approved = detailData.reviews.filter((r: any) => r.status === 'approved' || !r.status);
+                  if (approved.length > 0) {
+                    const total = approved.reduce((sum: number, r: any) => sum + r.rating, 0);
+                    avg = (total / approved.length).toFixed(1);
+                  }
+                }
+              }
+            } catch (e) { }
+
+            return { ...loc, averageRating: avg, imageUrl: imgUrl };
+         }));
+
+        // Chỉ lấy những địa điểm active 
+         const activeData = formattedData.filter((loc: any) => 
             loc.status === 'active' || loc.status === 'approved'
          );
 
+         //  SẮP XẾP TOÀN BỘ THEO LƯỢT XEM TỪ CAO XUỐNG THẤP
+         const sortedLocations = [...activeData].sort((a, b) => (b.views || 0) - (a.views || 0));
+
          // 1. TÁCH TOP 4 CHO PHẦN THỊNH HÀNH
-         const topTrending = [...activeData]
-            .sort((a, b) => (b.views || 0) - (a.views || 0))
-            .slice(0, 4);
+         const topTrending = sortedLocations.slice(0, 4);
          this.trendingLocations.set(topTrending);
 
-         // 2. Bơm toàn bộ dữ liệu lên Bản đồ
+         // 2. LƯU LẠI ID CỦA TOP 10 ĐỊA ĐIỂM (Không cắt bỏ dữ liệu đi)
+         this.topMapLocationIds = sortedLocations.slice(0, 10).map(loc => loc.id);
+         
+         // 3. Bơm TOÀN BỘ dữ liệu cho Bản đồ tạo ghim
          this.renderMarkers(activeData);
+         
+         // 4. Gọi bộ lọc mặc định để hiển thị Top 10 lúc mới vào web
+         this.selectCategory('Tất cả');
       }
     } catch (error) {
        console.error("Lỗi tải dữ liệu Trang chủ:", error);
@@ -144,16 +187,14 @@ export class Home implements AfterViewInit {
   // HÀM VẼ GHIM LÊN BẢN ĐỒ
   renderMarkers(locations: any[]) {
      locations.forEach(loc => {
-        // Nếu địa điểm chưa có tọa độ thì bỏ qua
         if (!loc.latitude || !loc.longitude) return;
 
+        // 🌟 BỎ đuôi .addTo(this.map) ở dòng này
         const marker = this.L.marker([loc.latitude, loc.longitude], { 
           icon: this.getIconForCategory(loc.category) 
-        }).addTo(this.map);
+        });
 
-        // Hiển thị ảnh mặc định nếu chưa có ảnh
-        const imageUrl = 'images/ha-long.jpg'; 
-
+        const imageUrl = loc.imageUrl || 'images/ha-long.jpg'; 
         const desc = loc.description ? loc.description.substring(0, 60) : 'Đang cập nhật...';
 
         marker.bindTooltip(`
@@ -165,16 +206,16 @@ export class Home implements AfterViewInit {
             </div>
           </div>`, {
           permanent: false, direction: 'right', offset: [15, 0], className: 'custom-popup'
-        }).openPopup();
+        }); // 🌟 BỎ đuôi .openPopup() ở đây luôn để nó không tự mở lúc load
         
-        // Click vào marker trên bản đồ sẽ nhảy sang trang chi tiết
         marker.on('click', () => {
           this.ngZone.run(() => {
              this.router.navigate(['/detail', loc.id]);
           });
         });
 
-        this.markerLayers.push({ instance: marker, category: loc.category });
+        // 🌟 CẬP NHẬT: Lưu cả id của địa điểm
+        this.markerLayers.push({ id: loc.id, instance: marker, category: loc.category });
      });
   }
 
@@ -184,11 +225,18 @@ export class Home implements AfterViewInit {
     if (!this.map || !this.L) return;
 
     this.markerLayers.forEach(item => {
-      // Nếu chọn 'Tất cả' hoặc tên danh mục của điểm đó trùng khớp với danh mục được click
-      if (categoryName === 'Tất cả' || item.category === categoryName) {
-        item.instance.addTo(this.map); // Hiện ghim
+      this.map.removeLayer(item.instance); // 🌟 Ẩn hết tất cả trước
+
+      if (categoryName === 'Tất cả') {
+        // Nếu chọn Tất cả -> Chỉ hiện những thằng nằm trong Top 10
+        if (this.topMapLocationIds.includes(item.id)) {
+          item.instance.addTo(this.map);
+        }
       } else {
-        this.map.removeLayer(item.instance); // Ẩn ghim
+        // Nếu chọn danh mục cụ thể -> Hiện TẤT CẢ của danh mục đó
+        if (item.category === categoryName) {
+          item.instance.addTo(this.map); 
+        }
       }
     });
   }

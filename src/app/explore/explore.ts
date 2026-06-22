@@ -80,30 +80,58 @@ export class Explore implements OnInit {
       if (response.ok) {
         const rawData = await response.json();
         
-        // 🌟 BƯỚC QUAN TRỌNG: Map lại dữ liệu từ Backend cho khớp với Frontend
-        const formattedData = rawData.map((p: any) => {
+        //  Chạy ngầm API chi tiết để rút số sao chuẩn xác
+        const formattedData = await Promise.all(rawData.map(async (p: any) => {
           let provName = 'Chưa xác định';
-          if (p.province) {
-            provName = typeof p.province === 'object' ? (p.province.name || 'Chưa xác định') : p.province;
-          }
-
+          if (p.province) provName = typeof p.province === 'object' ? (p.province.name || 'Chưa xác định') : p.province;
+          
           let catName = 'Khác';
-          if (p.category) {
-            catName = typeof p.category === 'object' ? (p.category.name || 'Khác') : p.category;
-          }
+          if (p.category) catName = typeof p.category === 'object' ? (p.category.name || 'Khác') : p.category;
+
+          let avg = '0.0';
+          let imgUrl = 'images/ha-long.jpg'; // Mặc định nếu không có ảnh
+
+          try {
+             const detailId = p.locationId || p.location_id || p.id;
+             const detailRes = await fetch(`http://localhost:8000/api/locations/${detailId}`);
+             if (detailRes.ok) {
+                const detailData = await detailRes.json();
+                
+                // 📸 LẤY ẢNH ĐẦU TIÊN
+                if (detailData.images && detailData.images.length > 0) {
+                    const firstImg = detailData.images[0];
+                    imgUrl = typeof firstImg === 'string' ? firstImg : firstImg.imageUrl;
+                    // Nếu link ảnh không có http thì ghép thêm đường dẫn localhost
+                    if (imgUrl && !imgUrl.startsWith('http')) {
+                        imgUrl = 'http://localhost:8000/uploads/' + imgUrl;
+                    }
+                }
+
+                // LẤY SỐ SAO TRUNG BÌNH
+                if (detailData.reviews && detailData.reviews.length > 0) {
+                  const approved = detailData.reviews.filter((r: any) => r.status === 'approved' || !r.status);
+                  if (approved.length > 0) {
+                    const total = approved.reduce((sum: number, r: any) => sum + r.rating, 0);
+                    avg = (total / approved.length).toFixed(1);
+                  }
+                }
+             }
+          } catch(e) { } 
 
           return {
-            id: p.locationId || p.location_id || p.id, // Đồng bộ ID để click không bị undefined
+            id: p.locationId || p.location_id || p.id, 
             name: p.name || 'Chưa có tên',
             province: provName, 
             category: catName,  
             status: p.status || 'active',
             description: p.description || '',
-            views: p.views || p.viewCount || p.view_count || 0
+            views: p.views || p.viewCount || p.view_count || 0,
+            averageRating: avg, 
+            imageUrl: imgUrl // 🌟 Gắn link ảnh vào dữ liệu
           };
-        });
+        }));
 
-        //  LỌC BỎ CÁC ĐỊA ĐIỂM BẢO TRÌ/ẨN TRƯỚC KHI HIỂN THỊ
+        // LỌC BỎ CÁC ĐỊA ĐIỂM BẢO TRÌ/ẨN TRƯỚC KHI HIỂN THỊ
         this.allLocations = formattedData.filter((loc: any) => 
             loc.status === 'active' || loc.status === 'approved'
         );
